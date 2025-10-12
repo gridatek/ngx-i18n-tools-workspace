@@ -82,7 +82,21 @@ npm run i18n:extract       # Extract translations
 npm run i18n:export        # Export to XLIFF
 npm run i18n:sync          # Extract + Export
 npm run i18n:validate      # Validate translations
+npm run i18n:merge         # Convert per-component → merged
+npm run i18n:split         # Convert merged → per-component
 ```
+
+### Testing Workflow
+
+Test the library locally with automated validation:
+
+```bash
+npm run test:workflow       # Full automated test (Unix/Git Bash)
+npm run test:workflow:win   # Full automated test (Windows)
+npm run test:quick          # Quick test (build + extract + validate)
+```
+
+The automated workflow tests all builders, validates outputs, and builds the demo app. See [TESTING.md](./TESTING.md) for detailed testing instructions.
 
 ## Features
 
