@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Angular i18n tooling library workspace",
   "scripts": {
+    "build:builders": "tsc -p projects/ngx-i18n-tools/src/lib/builders/tsconfig.json",
     "build:schematics": "tsc -p projects/schematics/tsconfig.json && cp projects/schematics/**/*.json dist/ngx-i18n-tools/schematics/",
-    "build:lib": "ng build ngx-i18n-tools && npm run build:schematics",
+    "build:lib": "ng build ngx-i18n-tools && npm run build:builders && npm run build:schematics",
     "build:lib:watch": "ng build ngx-i18n-tools --watch",
     "test:lib": "ng test ngx-i18n-tools",
     "lint:lib": "ng lint ngx-i18n-tools",

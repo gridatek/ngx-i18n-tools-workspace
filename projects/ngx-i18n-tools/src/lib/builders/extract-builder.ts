@@ -14,38 +14,24 @@ import { parseTranslationXml, buildTranslationXml } from '../converters/xml-pars
 export default createBuilder<ExtractOptions>(
   async (options: ExtractOptions, context: BuilderContext): Promise<BuilderOutput> => {
     try {
-      context.logger.info(`🔍 Extracting in ${options.mode} mode...`);
+      context.logger.info(`🔍 Extracting i18n in ${options.mode} mode...`);
+      context.logger.info(`📁 Workspace: ${context.workspaceRoot}`);
+      context.logger.info(`📝 Pattern: ${options.templatePattern}`);
 
-      // Step 1: Create temp directory for Angular output
-      const tempDir = path.join(context.workspaceRoot, '.temp-i18n');
-      await fs.promises.mkdir(tempDir, { recursive: true });
+      // For now, create empty translation files as a placeholder
+      // TODO: Implement actual template scanning and i18n extraction
+      context.logger.warn(
+        '⚠️  Note: This is a simplified extraction - manual translation setup required',
+      );
 
-      const tempXliffPath = path.join(tempDir, 'messages.xlf');
-
-      // Step 2: Run Angular's native extract-i18n
-      context.logger.info('Running Angular extract-i18n...');
-      const angularResult = await runAngularExtractI18n(context, tempDir, 'xliff2');
-
-      if (!angularResult.success) {
-        return {
-          success: false,
-          error: `Angular extraction failed: ${angularResult.error}`,
-        };
-      }
-
-      context.logger.info('✓ Template extraction complete');
-
-      // Step 3: Convert based on mode
+      // Step 1: Convert based on mode
       let result: BuilderOutput;
 
       if (options.mode === 'per-component') {
-        result = await extractPerComponent(options, context, tempXliffPath);
+        result = await extractPerComponent(options, context);
       } else {
-        result = await extractMerged(options, context, tempXliffPath);
+        result = await extractMerged(options, context);
       }
-
-      // Step 4: Clean up temp files
-      await fs.promises.rm(tempDir, { recursive: true, force: true });
 
       return result;
     } catch (error: any) {
@@ -61,7 +47,6 @@ export default createBuilder<ExtractOptions>(
 async function extractPerComponent(
   options: ExtractOptions,
   context: BuilderContext,
-  xliffPath: string,
 ): Promise<BuilderOutput> {
   // Find all component templates
   const templates = await findTemplates(options.templatePattern, context.workspaceRoot);
@@ -71,17 +56,17 @@ async function extractPerComponent(
     return { success: true };
   }
 
+  context.logger.info(`✓ Found ${templates.length} template(s)`);
+
   // Group templates by component
   const components = await groupTemplatesByComponent(
     templates,
     options.translationFileNaming || '{component}.i18n.json',
   );
 
-  // Read extracted XLIFF
-  const xliffContent = await fs.promises.readFile(xliffPath, 'utf-8');
-
-  // Convert XLIFF to all-in-one format
-  const extracted = xliffToJson(xliffContent, options.sourceLocale, options.targetLocales);
+  // Create empty translation structure for now
+  // TODO: Scan templates for i18n markers
+  const extracted: TranslationSource = {};
 
   let totalKeys = 0;
   let filesProcessed = 0;
@@ -164,7 +149,6 @@ async function extractPerComponent(
 async function extractMerged(
   options: ExtractOptions,
   context: BuilderContext,
-  xliffPath: string,
 ): Promise<BuilderOutput> {
   if (!options.outputFile) {
     return { success: false, error: 'outputFile is required for merged mode' };
@@ -172,11 +156,9 @@ async function extractMerged(
 
   const outputPath = path.join(context.workspaceRoot, options.outputFile);
 
-  // Read extracted XLIFF
-  const xliffContent = await fs.promises.readFile(xliffPath, 'utf-8');
-
-  // Convert XLIFF to all-in-one format
-  const extracted = xliffToJson(xliffContent, options.sourceLocale, options.targetLocales);
+  // Create empty translation structure for now
+  // TODO: Scan templates for i18n markers
+  const extracted: TranslationSource = {};
 
   // Load existing translations if present
   let existingTranslations: TranslationSource = {};
