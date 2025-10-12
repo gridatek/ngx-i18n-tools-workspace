@@ -3,12 +3,6 @@ import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { getWorkspace, updateWorkspace } from '@schematics/angular/utility/workspace';
 import { Schema } from './schema';
 
-interface Schema {
-  project?: string;
-  mode?: 'per-component' | 'merged';
-  targetLocales?: string[];
-}
-
 export function ngAdd(options: Schema): Rule {
   return chain([
     addBuilderConfiguration(options),

@@ -3,5 +3,13 @@
   "dest": "../../dist/ngx-i18n-tools",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["fast-xml-parser", "glob"],
+  "assets": [
+    "./builders.json",
+    "./src/lib/builders/*.json",
+    "./src/lib/builders/*.js",
+    "./src/lib/builders/*.ts",
+    "../schematics/**/*"
+  ]
 }

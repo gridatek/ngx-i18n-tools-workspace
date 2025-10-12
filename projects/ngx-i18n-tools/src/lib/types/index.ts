@@ -64,7 +64,7 @@ export interface ValidationWarning {
 /**
  * Extract builder options
  */
-export interface ExtractOptions extends JsonObject {
+export interface ExtractOptions {
   mode: 'per-component' | 'merged';
   templatePattern: string;
   translationFileNaming?: string;
@@ -81,7 +81,7 @@ export interface ExtractOptions extends JsonObject {
 /**
  * Export builder options
  */
-export interface ExportOptions extends JsonObject {
+export interface ExportOptions {
   source?: string;
   translationPattern?: string;
   outputPath: string;
