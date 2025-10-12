@@ -38,7 +38,9 @@ export default createBuilder<SplitOptions>(
         const keys = await getTemplateKeys(templatePath);
 
         if (keys.size === 0) {
-          context.logger.warn(`No i18n keys found in ${path.relative(context.workspaceRoot, templatePath)}`);
+          context.logger.warn(
+            `No i18n keys found in ${path.relative(context.workspaceRoot, templatePath)}`,
+          );
           continue;
         }
 
@@ -59,14 +61,18 @@ export default createBuilder<SplitOptions>(
         await fs.promises.mkdir(translationDir, { recursive: true });
 
         if (options.outputFormat === 'json') {
-          await fs.promises.writeFile(translationPath, JSON.stringify(componentTranslations, null, 2), 'utf-8');
+          await fs.promises.writeFile(
+            translationPath,
+            JSON.stringify(componentTranslations, null, 2),
+            'utf-8',
+          );
         } else {
           const xmlContent = buildTranslationXml(componentTranslations);
           await fs.promises.writeFile(translationPath, xmlContent, 'utf-8');
         }
 
         context.logger.info(
-          `✓ Created: ${path.relative(context.workspaceRoot, translationPath)} (${keys.size} keys)`
+          `✓ Created: ${path.relative(context.workspaceRoot, translationPath)} (${keys.size} keys)`,
         );
       }
 
@@ -78,7 +84,7 @@ export default createBuilder<SplitOptions>(
       context.logger.error(`Split failed: ${error.message}`);
       return { success: false, error: error.message };
     }
-  }
+  },
 );
 
 async function loadTranslationFile(filePath: string): Promise<TranslationSource> {

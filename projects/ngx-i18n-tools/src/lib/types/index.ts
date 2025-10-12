@@ -42,7 +42,12 @@ export interface ValidationResult {
 }
 
 export interface ValidationError {
-  type: 'duplicate_key' | 'missing_language' | 'invalid_interpolation' | 'invalid_format' | 'template_mismatch';
+  type:
+    | 'duplicate_key'
+    | 'missing_language'
+    | 'invalid_interpolation'
+    | 'invalid_format'
+    | 'template_mismatch';
   key: string;
   message: string;
   file: string;

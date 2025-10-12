@@ -6,7 +6,7 @@ import { TranslationSource, ValidationResult, ValidationError, ValidationWarning
 export function validateTranslations(
   translations: TranslationSource,
   targetLocales: string[],
-  sourceLocale: string = 'en'
+  sourceLocale: string = 'en',
 ): ValidationResult {
   const errors: ValidationError[] = [];
   const warnings: ValidationWarning[] = [];
@@ -18,7 +18,7 @@ export function validateTranslations(
         type: 'missing_language',
         key,
         message: `Missing source language '${sourceLocale}'`,
-        file: ''
+        file: '',
       });
       continue;
     }
@@ -36,7 +36,7 @@ export function validateTranslations(
           type: 'incomplete_translation',
           key,
           message: `Missing translation for locale '${locale}'`,
-          file: ''
+          file: '',
         });
         continue;
       }
@@ -49,7 +49,7 @@ export function validateTranslations(
           type: 'invalid_interpolation',
           key,
           message: `Interpolation mismatch: source has [${sourcePlaceholders.join(', ')}], target has [${targetPlaceholders.join(', ')}]`,
-          file: ''
+          file: '',
         });
       }
     }
@@ -58,7 +58,7 @@ export function validateTranslations(
   return {
     valid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -68,7 +68,7 @@ export function validateTranslations(
 export function extractPlaceholders(text: string): string[] {
   const pattern = /\{\{([^}]+)\}\}/g;
   const matches = Array.from(text.matchAll(pattern));
-  return matches.map(m => m[1].trim()).sort();
+  return matches.map((m) => m[1].trim()).sort();
 }
 
 /**
@@ -86,9 +86,7 @@ function arePlaceholdersEqual(arr1: string[], arr2: string[]): boolean {
 /**
  * Validate for duplicate keys across multiple translation files
  */
-export function validateDuplicateKeys(
-  files: Map<string, TranslationSource>
-): ValidationError[] {
+export function validateDuplicateKeys(files: Map<string, TranslationSource>): ValidationError[] {
   const errors: ValidationError[] = [];
   const keyToFiles = new Map<string, string[]>();
 
@@ -109,7 +107,7 @@ export function validateDuplicateKeys(
         type: 'duplicate_key',
         key,
         message: `Duplicate key found in: ${files.join(', ')}`,
-        file: files[0]
+        file: files[0],
       });
     }
   }
@@ -122,7 +120,7 @@ export function validateDuplicateKeys(
  */
 export function findUnusedKeys(
   translations: TranslationSource,
-  usedKeys: Set<string>
+  usedKeys: Set<string>,
 ): ValidationWarning[] {
   const warnings: ValidationWarning[] = [];
 
@@ -132,7 +130,7 @@ export function findUnusedKeys(
         type: 'unused_key',
         key,
         message: `Key '${key}' not found in any template`,
-        file: ''
+        file: '',
       });
     }
   }
@@ -154,7 +152,7 @@ export interface CoverageStats {
 
 export function calculateCoverage(
   translations: TranslationSource,
-  targetLocales: string[]
+  targetLocales: string[],
 ): CoverageStats {
   const totalKeys = Object.keys(translations).length;
   const totalTranslations = totalKeys * targetLocales.length;
@@ -178,7 +176,7 @@ export function calculateCoverage(
     byLanguage.set(locale, {
       complete,
       missing,
-      percentage: totalKeys > 0 ? Math.round((complete / totalKeys) * 100) : 0
+      percentage: totalKeys > 0 ? Math.round((complete / totalKeys) * 100) : 0,
     });
   }
 
@@ -187,7 +185,8 @@ export function calculateCoverage(
     totalTranslations,
     completeTranslations,
     missingTranslations: totalTranslations - completeTranslations,
-    coveragePercentage: totalTranslations > 0 ? Math.round((completeTranslations / totalTranslations) * 100) : 0,
-    byLanguage
+    coveragePercentage:
+      totalTranslations > 0 ? Math.round((completeTranslations / totalTranslations) * 100) : 0,
+    byLanguage,
   };
 }

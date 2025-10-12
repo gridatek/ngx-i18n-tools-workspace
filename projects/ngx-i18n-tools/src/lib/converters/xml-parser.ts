@@ -9,7 +9,7 @@ export function parseXliff(xliffContent: string): TranslationEntry[] {
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
     parseAttributeValue: false,
-    trimValues: true
+    trimValues: true,
   });
 
   const parsed = parser.parse(xliffContent);
@@ -52,7 +52,7 @@ function parseXliff2(parsed: any): TranslationEntry[] {
       id: unit['@_id'] || '',
       source: extractText(segment.source),
       target: segment.target ? extractText(segment.target) : undefined,
-      description: unit.notes?.note || undefined
+      description: unit.notes?.note || undefined,
     };
 
     entries.push(entry);
@@ -73,9 +73,7 @@ function parseXliff1(parsed: any): TranslationEntry[] {
   const body = file.body;
   if (!body) return entries;
 
-  const transUnits = Array.isArray(body['trans-unit'])
-    ? body['trans-unit']
-    : [body['trans-unit']];
+  const transUnits = Array.isArray(body['trans-unit']) ? body['trans-unit'] : [body['trans-unit']];
 
   for (const unit of transUnits) {
     if (!unit) continue;
@@ -85,7 +83,7 @@ function parseXliff1(parsed: any): TranslationEntry[] {
       source: extractText(unit.source),
       target: unit.target ? extractText(unit.target) : undefined,
       description: unit.note || undefined,
-      sourceFile: unit['@_datatype'] || undefined
+      sourceFile: unit['@_datatype'] || undefined,
     };
 
     entries.push(entry);
@@ -140,7 +138,7 @@ export function parseTranslationXml(xmlContent: string): Record<string, Record<s
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
     parseAttributeValue: false,
-    trimValues: true
+    trimValues: true,
   });
 
   const parsed = parser.parse(xmlContent);
@@ -177,8 +175,8 @@ export function buildTranslationXml(translations: Record<string, Record<string, 
   const xmlObj: any = {
     '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' },
     translations: {
-      translation: []
-    }
+      translation: [],
+    },
   };
 
   for (const [key, langs] of Object.entries(translations)) {
@@ -196,7 +194,7 @@ export function buildTranslationXml(translations: Record<string, Record<string, 
     attributeNamePrefix: '@_',
     format: true,
     indentBy: '  ',
-    suppressEmptyNode: true
+    suppressEmptyNode: true,
   });
 
   return builder.build(xmlObj);

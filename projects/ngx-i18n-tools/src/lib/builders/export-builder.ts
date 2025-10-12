@@ -22,24 +22,30 @@ export default createBuilder<ExportOptions>(
         // Merged mode: single file
         allTranslations = await loadTranslationFile(
           path.join(context.workspaceRoot, options.source),
-          context
+          context,
         );
-        context.logger.info(`✓ Loaded ${Object.keys(allTranslations).length} keys from ${options.source}`);
+        context.logger.info(
+          `✓ Loaded ${Object.keys(allTranslations).length} keys from ${options.source}`,
+        );
       } else if (options.translationPattern) {
         // Per-component mode: scan and merge
         const files = await findTranslationFiles(options.translationPattern, context.workspaceRoot);
 
         if (files.length === 0) {
-          context.logger.warn(`No translation files found matching pattern: ${options.translationPattern}`);
+          context.logger.warn(
+            `No translation files found matching pattern: ${options.translationPattern}`,
+          );
           return { success: true };
         }
 
         allTranslations = await mergeAllTranslationFiles(files, context);
-        context.logger.info(`✓ Collected ${Object.keys(allTranslations).length} keys from ${files.length} files`);
+        context.logger.info(
+          `✓ Collected ${Object.keys(allTranslations).length} keys from ${files.length} files`,
+        );
       } else {
         return {
           success: false,
-          error: 'Either "source" or "translationPattern" must be specified'
+          error: 'Either "source" or "translationPattern" must be specified',
         };
       }
 
@@ -47,7 +53,7 @@ export default createBuilder<ExportOptions>(
       const validation = validateTranslations(
         allTranslations,
         options.targetLocales,
-        options.sourceLocale
+        options.sourceLocale,
       );
 
       if (validation.errors.length > 0) {
@@ -74,7 +80,7 @@ export default createBuilder<ExportOptions>(
         allTranslations,
         options.sourceLocale,
         undefined,
-        options.format
+        options.format,
       );
 
       const sourceFileName = `messages.${options.sourceLocale}.xlf`;
@@ -88,7 +94,7 @@ export default createBuilder<ExportOptions>(
           allTranslations,
           options.sourceLocale,
           targetLocale,
-          options.format
+          options.format,
         );
 
         const targetFileName = `messages.${targetLocale}.xlf`;
@@ -99,7 +105,7 @@ export default createBuilder<ExportOptions>(
         const completeness = calculateCompleteness(allTranslations, targetLocale);
         const status = completeness === 100 ? '✓' : '⚠️';
         context.logger.info(
-          `${status} Generated: ${path.relative(context.workspaceRoot, targetFilePath)} (${completeness}% complete)`
+          `${status} Generated: ${path.relative(context.workspaceRoot, targetFilePath)} (${completeness}% complete)`,
         );
       }
 
@@ -108,7 +114,7 @@ export default createBuilder<ExportOptions>(
       context.logger.error(`Export failed: ${error.message}`);
       return { success: false, error: error.message };
     }
-  }
+  },
 );
 
 /**
@@ -124,7 +130,7 @@ async function findTranslationFiles(pattern: string, cwd: string): Promise<strin
  */
 async function loadTranslationFile(
   filePath: string,
-  context: BuilderContext
+  context: BuilderContext,
 ): Promise<TranslationSource> {
   const content = await fs.promises.readFile(filePath, 'utf-8');
   const ext = path.extname(filePath).toLowerCase();
@@ -143,7 +149,7 @@ async function loadTranslationFile(
  */
 async function mergeAllTranslationFiles(
   files: string[],
-  context: BuilderContext
+  context: BuilderContext,
 ): Promise<TranslationSource> {
   const merged: TranslationSource = {};
 

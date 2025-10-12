@@ -11,14 +11,14 @@ export function mergeTranslations(
   options: {
     preserveExisting: boolean;
     cleanUnused: boolean;
-  }
+  },
 ): { merged: TranslationSource; result: MergeResult } {
   const merged: TranslationSource = {};
   const result: MergeResult = {
     added: [],
     updated: [],
     removed: [],
-    preserved: []
+    preserved: [],
   };
 
   // Process new translations
@@ -75,9 +75,7 @@ export function mergeTranslations(
 /**
  * Merge multiple translation files into one
  */
-export function mergeMultipleFiles(
-  files: Map<string, TranslationSource>
-): TranslationSource {
+export function mergeMultipleFiles(files: Map<string, TranslationSource>): TranslationSource {
   const merged: TranslationSource = {};
 
   for (const [filePath, translations] of files.entries()) {
@@ -115,13 +113,13 @@ export function initializeTranslations(
   keys: string[],
   sourceLocale: string,
   sourceTexts: Map<string, string>,
-  targetLocales: string[]
+  targetLocales: string[],
 ): TranslationSource {
   const translations: TranslationSource = {};
 
   for (const key of keys) {
     translations[key] = {
-      [sourceLocale]: sourceTexts.get(key) || ''
+      [sourceLocale]: sourceTexts.get(key) || '',
     };
 
     for (const locale of targetLocales) {

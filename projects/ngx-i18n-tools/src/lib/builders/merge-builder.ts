@@ -25,11 +25,13 @@ export default createBuilder<MergeOptions>(
       // Find all translation files
       const filePaths = await glob(options.translationPattern, {
         cwd: context.workspaceRoot,
-        absolute: true
+        absolute: true,
       });
 
       if (filePaths.length === 0) {
-        context.logger.warn(`No translation files found matching pattern: ${options.translationPattern}`);
+        context.logger.warn(
+          `No translation files found matching pattern: ${options.translationPattern}`,
+        );
         return { success: true };
       }
 
@@ -41,7 +43,9 @@ export default createBuilder<MergeOptions>(
         files.set(filePath, translations);
 
         const keyCount = Object.keys(translations).length;
-        context.logger.info(`✓ ${path.relative(context.workspaceRoot, filePath)} (${keyCount} keys)`);
+        context.logger.info(
+          `✓ ${path.relative(context.workspaceRoot, filePath)} (${keyCount} keys)`,
+        );
       }
 
       // Merge all translations
@@ -57,13 +61,19 @@ export default createBuilder<MergeOptions>(
       await fs.promises.mkdir(outputDir, { recursive: true });
 
       if (options.outputFormat === 'json') {
-        await fs.promises.writeFile(outputPath, JSON.stringify(finalTranslations, null, 2), 'utf-8');
+        await fs.promises.writeFile(
+          outputPath,
+          JSON.stringify(finalTranslations, null, 2),
+          'utf-8',
+        );
       } else {
         const xmlContent = buildTranslationXml(finalTranslations);
         await fs.promises.writeFile(outputPath, xmlContent, 'utf-8');
       }
 
-      context.logger.info(`\n✓ Created: ${path.relative(context.workspaceRoot, outputPath)} (${totalKeys} keys)`);
+      context.logger.info(
+        `\n✓ Created: ${path.relative(context.workspaceRoot, outputPath)} (${totalKeys} keys)`,
+      );
       context.logger.info('\n⚠️  Original component files preserved.');
       context.logger.info('   Delete manually if no longer needed.');
 
@@ -72,7 +82,7 @@ export default createBuilder<MergeOptions>(
       context.logger.error(`Merge failed: ${error.message}`);
       return { success: false, error: error.message };
     }
-  }
+  },
 );
 
 async function loadTranslationFile(filePath: string): Promise<TranslationSource> {

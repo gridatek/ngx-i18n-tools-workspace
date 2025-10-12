@@ -7,7 +7,7 @@ import { parseXliff } from './xml-parser';
 export function xliffToJson(
   xliffContent: string,
   sourceLocale: string,
-  targetLocales: string[]
+  targetLocales: string[],
 ): TranslationSource {
   const entries = parseXliff(xliffContent);
   const result: TranslationSource = {};
@@ -16,7 +16,7 @@ export function xliffToJson(
     if (!entry.id) continue;
 
     result[entry.id] = {
-      [sourceLocale]: entry.source
+      [sourceLocale]: entry.source,
     };
 
     // Initialize empty target locales
@@ -33,7 +33,7 @@ export function xliffToJson(
  */
 export function mergeXliffFiles(
   xliffFiles: Map<string, string>,
-  sourceLocale: string
+  sourceLocale: string,
 ): TranslationSource {
   const result: TranslationSource = {};
 

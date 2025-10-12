@@ -7,7 +7,7 @@ import { generateXliff } from './xliff-generator';
 export function jsonToXliffUnits(
   translations: TranslationSource,
   sourceLocale: string,
-  targetLocale?: string
+  targetLocale?: string,
 ): XliffUnit[] {
   const units: XliffUnit[] = [];
 
@@ -17,7 +17,7 @@ export function jsonToXliffUnits(
 
     const unit: XliffUnit = {
       id: key,
-      source: sourceText
+      source: sourceText,
     };
 
     if (targetLocale && langs[targetLocale]) {
@@ -37,7 +37,7 @@ export function jsonToXliff(
   translations: TranslationSource,
   sourceLocale: string,
   targetLocale: string | undefined,
-  format: 'xliff' | 'xliff2'
+  format: 'xliff' | 'xliff2',
 ): string {
   const units = jsonToXliffUnits(translations, sourceLocale, targetLocale);
   return generateXliff(units, sourceLocale, targetLocale, format);
@@ -50,7 +50,7 @@ export function jsonToMultipleXliff(
   translations: TranslationSource,
   sourceLocale: string,
   targetLocales: string[],
-  format: 'xliff' | 'xliff2'
+  format: 'xliff' | 'xliff2',
 ): Map<string, string> {
   const result = new Map<string, string>();
 

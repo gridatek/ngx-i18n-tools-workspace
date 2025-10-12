@@ -5,7 +5,10 @@ import * as path from 'path';
 /**
  * Find all template files matching pattern
  */
-export async function findTemplates(pattern: string, cwd: string = process.cwd()): Promise<string[]> {
+export async function findTemplates(
+  pattern: string,
+  cwd: string = process.cwd(),
+): Promise<string[]> {
   const files = await glob(pattern, { cwd, absolute: true });
   return files;
 }
@@ -15,7 +18,7 @@ export async function findTemplates(pattern: string, cwd: string = process.cwd()
  */
 export function getTranslationFilePath(
   templatePath: string,
-  naming: string = '{component}.i18n.json'
+  naming: string = '{component}.i18n.json',
 ): string {
   const dir = path.dirname(templatePath);
   const basename = path.basename(templatePath, path.extname(templatePath));
@@ -38,7 +41,7 @@ export interface ComponentInfo {
 
 export async function groupTemplatesByComponent(
   templates: string[],
-  translationNaming: string = '{component}.i18n.json'
+  translationNaming: string = '{component}.i18n.json',
 ): Promise<ComponentInfo[]> {
   const components: ComponentInfo[] = [];
 
@@ -54,7 +57,7 @@ export async function groupTemplatesByComponent(
       name: basename,
       templatePath,
       translationPath: getTranslationFilePath(templatePath, translationNaming),
-      componentPath
+      componentPath,
     });
   }
 
@@ -96,9 +99,7 @@ export async function getTemplateKeys(templatePath: string): Promise<Set<string>
 /**
  * Map keys to their source files
  */
-export async function mapKeysToSourceFiles(
-  templates: string[]
-): Promise<Map<string, string>> {
+export async function mapKeysToSourceFiles(templates: string[]): Promise<Map<string, string>> {
   const keyToFile = new Map<string, string>();
 
   for (const templatePath of templates) {

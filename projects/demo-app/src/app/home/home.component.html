@@ -4,11 +4,15 @@
   <p i18n="@@home.subtitle">Your personal dashboard</p>
 
   <div class="greeting">
-    <p i18n="@@greeting">Hello {{userName}}!</p>
+    <p i18n="@@greeting">Hello {{ userName }}!</p>
   </div>
 
   <div class="items">
-    <span i18n="@@items.count">{itemCount, plural, =0 {No items} =1 {One item} other {{{itemCount}} items}}</span>
+    <span i18n="@@items.count">{itemCount, plural,
+      =0 {No items}
+      =1 {One item}
+      other {{{itemCount}} items}
+    }</span>
   </div>
 
   <button i18n="@@home.action">Get Started</button>

@@ -90,9 +90,11 @@ ngx-i18n-tools-workspace/
 The library supports **two extraction modes** to accommodate different project needs:
 
 ### Mode 1: Per-Component (Default)
+
 One translation file per component template - perfect co-location.
 
 ### Mode 2: Merged
+
 Single translation file containing all keys from all templates - like standard Angular i18n but with our all-in-one format.
 
 ---
@@ -143,14 +145,14 @@ Single translation file containing all keys from all templates - like standard A
     <fr>Bienvenue</fr>
     <de>Willkommen</de>
   </translation>
-  
+
   <translation key="greeting">
     <en>Hello {{name}}!</en>
     <es>¡Hola {{name}}!</es>
     <fr>Bonjour {{name}}!</fr>
     <de>Hallo {{name}}!</de>
   </translation>
-  
+
   <translation key="user.profile.title">
     <en>Profile Settings</en>
     <es>Configuración del Perfil</es>
@@ -250,12 +252,14 @@ ng run demo-app:extract-i18n
 ```
 
 **What happens internally:**
+
 1. Builder calls Angular's native `extract-i18n` on each template
 2. Parses the generated XLIFF output
 3. Creates `home.component.i18n.json` next to the template
 4. Pre-fills with source language, empty target languages
 
 **Console Output:**
+
 ```
 🔍 Extracting in per-component mode...
 ✓ home.component.html → home.component.i18n.json
@@ -270,6 +274,7 @@ ng run demo-app:extract-i18n
 ```
 
 **Generated File:**
+
 ```json
 // home.component.i18n.json
 {
@@ -329,12 +334,14 @@ ng run demo-app:i18n-export
 ```
 
 **What happens:**
+
 1. Scans all `*.i18n.json` and `*.i18n.xml` files
 2. Merges all translations
 3. Generates XLIFF files per language
 4. Validates completeness
 
 **Console Output:**
+
 ```
 🔄 Exporting translations...
 ✓ Collected 10 keys from 3 files
@@ -353,6 +360,7 @@ ng build --localize
 Angular's compiler uses the generated XLIFF files to create localized builds.
 
 **Output:**
+
 ```
 dist/demo-app/
 ├── browser/
@@ -371,12 +379,14 @@ ng run demo-app:extract-i18n
 ```
 
 **Merge behavior:**
+
 - **New keys** → Added with empty translations
 - **Existing keys** → Preserved translations retained
 - **Removed keys** → Flagged as unused (optional cleanup with `--clean`)
 - **Updated source text** → Source updated, translations preserved, warning logged
 
 **Console Output:**
+
 ```
 ✓ Updated: home.component.i18n.json
   - Added: home.newFeature (needs translation: es, fr, de)
@@ -435,12 +445,14 @@ ng run demo-app:extract-i18n
 ```
 
 **What happens internally:**
+
 1. Builder calls Angular's native `extract-i18n` on all templates
 2. Parses the generated XLIFF
 3. Creates or updates single `translations.json` file
 4. Groups all keys from all components
 
 **Console Output:**
+
 ```
 🔍 Extracting in merged mode...
 ✓ Scanned 3 templates
@@ -456,6 +468,7 @@ ng run demo-app:extract-i18n
 ```
 
 **Generated File:**
+
 ```json
 // src/locale/translations.json
 {
@@ -523,6 +536,7 @@ ng run demo-app:i18n-export
 ```
 
 **Console Output:**
+
 ```
 🔄 Exporting translations...
 ✓ Loaded 10 keys from translations.json
@@ -555,23 +569,20 @@ Use Angular's standard `i18n` attributes with message IDs:
 
 <!-- Plural forms (ICU syntax) -->
 <span i18n="@@items.count">
-  {count, plural, 
-    =0 {No items} 
-    =1 {One item} 
-    other {{{count}} items}
-  }
+  {count, plural, =0 {No items} =1 {One item} other {{{count}} items} }
 </span>
 
 <!-- Attributes -->
-<img [src]="logoUrl" i18n-alt="@@logo.alt" alt="Company Logo">
+<img [src]="logoUrl" i18n-alt="@@logo.alt" alt="Company Logo" />
 
 <!-- Multiple attributes -->
-<input 
-  type="text" 
-  i18n-placeholder="@@search.placeholder" 
+<input
+  type="text"
+  i18n-placeholder="@@search.placeholder"
   placeholder="Search..."
   i18n-title="@@search.title"
-  title="Enter search terms">
+  title="Enter search terms"
+/>
 ```
 
 ### Using $localize (TypeScript)
@@ -581,17 +592,17 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-example',
-  template: '<p>{{ message }}</p>'
+  template: '<p>{{ message }}</p>',
 })
 export class ExampleComponent {
   // Simple localization
   message = $localize`:@@welcome:Welcome`;
-  
+
   // With interpolation
   greetUser(name: string) {
     return $localize`:@@greeting:Hello ${name}!`;
   }
-  
+
   // With description and meaning
   title = $localize`:Page title|Main page heading@@home.title:Home Page`;
 }
@@ -706,8 +717,8 @@ import { JsonObject } from '@angular-devkit/core';
 interface ExtractBuilderOptions extends JsonObject {
   mode: 'per-component' | 'merged';
   templatePattern: string;
-  translationFileNaming?: string;  // For per-component mode
-  outputFile?: string;              // For merged mode
+  translationFileNaming?: string; // For per-component mode
+  outputFile?: string; // For merged mode
   outputFormat: 'json' | 'xml';
   sourceLocale: string;
   targetLocales: string[];
@@ -719,42 +730,37 @@ interface ExtractBuilderOptions extends JsonObject {
 
 export default createBuilder<ExtractBuilderOptions>(
   async (options: ExtractBuilderOptions, context: BuilderContext): Promise<BuilderOutput> => {
-    
     context.logger.info(`🔍 Extracting in ${options.mode} mode...`);
-    
+
     // Step 1: Run Angular's native extract-i18n
     const tempXliffPath = 'temp/messages.xlf';
     const angularResult = await runAngularExtractI18n(context, tempXliffPath);
-    
+
     if (!angularResult.success) {
       return { success: false, error: 'Angular extraction failed' };
     }
-    
+
     context.logger.info('✓ Template extraction complete');
-    
+
     // Step 2: Convert based on mode
     if (options.mode === 'per-component') {
       return await extractPerComponent(options, context, tempXliffPath);
     } else {
       return await extractMerged(options, context, tempXliffPath);
     }
-  }
+  },
 );
 
 async function runAngularExtractI18n(
-  context: BuilderContext, 
-  outputPath: string
+  context: BuilderContext,
+  outputPath: string,
 ): Promise<BuilderOutput> {
   // Execute Angular's built-in extract-i18n
   return new Promise((resolve) => {
-    const ng = spawn('ng', [
-      'extract-i18n',
-      '--format=xliff2',
-      `--output-path=${outputPath}`
-    ], {
-      stdio: 'inherit'
+    const ng = spawn('ng', ['extract-i18n', '--format=xliff2', `--output-path=${outputPath}`], {
+      stdio: 'inherit',
     });
-    
+
     ng.on('close', (code) => {
       resolve({ success: code === 0 });
     });
@@ -764,66 +770,64 @@ async function runAngularExtractI18n(
 async function extractPerComponent(
   options: ExtractBuilderOptions,
   context: BuilderContext,
-  xliffPath: string
+  xliffPath: string,
 ): Promise<BuilderOutput> {
-  
   // 1. Find all component templates
   const templates = await findTemplates(options.templatePattern);
-  
+
   // 2. Parse XLIFF to get all extracted messages
   const extractedMessages = await parseXliff(xliffPath);
-  
+
   // 3. Group messages by source file (component)
   const messagesByComponent = groupMessagesByComponent(extractedMessages);
-  
+
   // 4. For each component, create/update .i18n.json file
   for (const [componentPath, messages] of messagesByComponent) {
     const translationFilePath = getTranslationFilePath(
-      componentPath, 
-      options.translationFileNaming
+      componentPath,
+      options.translationFileNaming,
     );
-    
+
     // Load existing translations if present
     const existing = await loadExistingTranslations(translationFilePath);
-    
+
     // Merge new extractions with existing translations
     const merged = mergeTranslations(messages, existing, options);
-    
+
     // Write translation file
     await writeTranslationFile(translationFilePath, merged, options.outputFormat);
-    
+
     context.logger.info(`✓ ${componentPath} → ${translationFilePath}`);
   }
-  
+
   // 5. Clean up temp files
   await cleanupTempFiles([xliffPath]);
-  
+
   return { success: true };
 }
 
 async function extractMerged(
   options: ExtractBuilderOptions,
   context: BuilderContext,
-  xliffPath: string
+  xliffPath: string,
 ): Promise<BuilderOutput> {
-  
   // 1. Parse XLIFF to get all extracted messages
   const extractedMessages = await parseXliff(xliffPath);
-  
+
   // 2. Load existing translations if present
   const existing = await loadExistingTranslations(options.outputFile!);
-  
+
   // 3. Merge all messages into single structure
   const merged = mergeTranslations(extractedMessages, existing, options);
-  
+
   // 4. Write single translation file
   await writeTranslationFile(options.outputFile!, merged, options.outputFormat);
-  
+
   context.logger.info(`✓ Generated: ${options.outputFile}`);
-  
+
   // 5. Clean up temp files
   await cleanupTempFiles([xliffPath]);
-  
+
   return { success: true };
 }
 ```
@@ -835,8 +839,8 @@ Converts all-in-one format back to XLIFF for Angular's build.
 ```typescript
 // builders/export-builder.ts
 interface ExportBuilderOptions extends JsonObject {
-  source?: string;                 // For merged mode
-  translationPattern?: string;     // For per-component mode
+  source?: string; // For merged mode
+  translationPattern?: string; // For per-component mode
   outputPath: string;
   format: 'xliff' | 'xliff2';
   sourceLocale: string;
@@ -845,12 +849,11 @@ interface ExportBuilderOptions extends JsonObject {
 
 export default createBuilder<ExportBuilderOptions>(
   async (options: ExportBuilderOptions, context: BuilderContext): Promise<BuilderOutput> => {
-    
     context.logger.info('🔄 Exporting translations...');
-    
+
     // Step 1: Collect all translation files
     let allTranslations: TranslationMap;
-    
+
     if (options.source) {
       // Merged mode: single file
       allTranslations = await loadTranslationFile(options.source);
@@ -859,33 +862,33 @@ export default createBuilder<ExportBuilderOptions>(
       const files = await findTranslationFiles(options.translationPattern!);
       allTranslations = await mergeAllTranslationFiles(files);
     }
-    
+
     context.logger.info(`✓ Collected ${Object.keys(allTranslations).length} keys`);
-    
+
     // Step 2: Validate translations
     const validation = validateTranslations(allTranslations, options.targetLocales);
     if (!validation.valid) {
       logValidationErrors(validation, context);
       return { success: false, error: 'Validation failed' };
     }
-    
+
     // Step 3: Generate XLIFF files per language
     for (const locale of [options.sourceLocale, ...options.targetLocales]) {
       const xliffContent = generateXliff(
-        allTranslations, 
+        allTranslations,
         options.sourceLocale,
         locale,
-        options.format
+        options.format,
       );
-      
+
       const outputFile = `${options.outputPath}/messages.${locale}.xlf`;
       await writeFile(outputFile, xliffContent);
-      
+
       context.logger.info(`✓ Generated: ${outputFile}`);
     }
-    
+
     return { success: true };
-  }
+  },
 );
 ```
 
@@ -900,12 +903,14 @@ ng run demo-app:i18n-merge-all
 ```
 
 **What it does:**
+
 - Scans all `*.i18n.json` files
 - Merges into single `translations.json`
 - Preserves all translations
 - Keeps original files (manual cleanup needed)
 
 **Console Output:**
+
 ```
 🔄 Merging all component translations...
 ✓ home.component.i18n.json (3 keys)
@@ -913,7 +918,7 @@ ng run demo-app:i18n-merge-all
 ✓ settings.component.i18n.json (2 keys)
 ✓ Created: src/locale/translations.json (10 keys)
 
-⚠️  Original component files preserved. 
+⚠️  Original component files preserved.
     Delete manually if no longer needed.
 ```
 
@@ -924,12 +929,14 @@ ng run demo-app:i18n-split
 ```
 
 **What it does:**
+
 - Reads single `translations.json`
 - Maps keys back to component templates (requires template analysis)
 - Creates individual `.i18n.json` files
 - Keeps original file (manual cleanup needed)
 
 **Console Output:**
+
 ```
 🔄 Splitting translations by component...
 ✓ Created: home.component.i18n.json (3 keys)
@@ -951,6 +958,7 @@ ng run demo-app:i18n-validate
 ```
 
 **Checks:**
+
 - All templates have corresponding translations
 - All translation keys exist in templates
 - All target locales present for each key
@@ -958,6 +966,7 @@ ng run demo-app:i18n-validate
 - No duplicate keys across files
 
 **Console Output:**
+
 ```
 🔍 Validating translations...
 
@@ -973,7 +982,7 @@ ng run demo-app:i18n-validate
   - settings.component: Interpolation mismatch
     en: "Hello {{name}}"
     es: "Hola {{nombre}}"
-    
+
 Validation: FAILED with 1 error, 2 warnings
 ```
 
@@ -984,6 +993,7 @@ ng run demo-app:i18n-report
 ```
 
 **Generates:**
+
 - Translation coverage by component
 - Translation coverage by language
 - Missing translations
@@ -991,6 +1001,7 @@ ng run demo-app:i18n-report
 - Statistics
 
 **Console Output:**
+
 ```
 📊 Translation Coverage Report
 ==============================
@@ -1011,7 +1022,7 @@ By Language:
 
 Unused Keys:
   - home.oldFeature (not found in templates)
-  
+
 Statistics:
   Total keys: 10
   Total translations: 40 (10 keys × 4 languages)
@@ -1068,7 +1079,12 @@ export interface ValidationResult {
 }
 
 export interface ValidationError {
-  type: 'duplicate_key' | 'missing_language' | 'invalid_interpolation' | 'invalid_format' | 'template_mismatch';
+  type:
+    | 'duplicate_key'
+    | 'missing_language'
+    | 'invalid_interpolation'
+    | 'invalid_format'
+    | 'template_mismatch';
   key: string;
   message: string;
   file: string;
@@ -1150,8 +1166,8 @@ export interface XliffFile {
 ❌ ERROR: Duplicate key "welcome" found in:
   - src/app/home/home.component.i18n.json
   - src/app/shared/common.i18n.json
-  
-Resolution: 
+
+Resolution:
   - Use unique keys (e.g., "home.welcome" vs "shared.welcome")
   - Or merge files if they should share translations
 ```
@@ -1162,7 +1178,7 @@ Resolution:
 ⚠️  WARNING: Key "user.profile.title" is missing translations for:
   - de (German)
   - fr (French)
-  
+
 File: src/app/profile/profile.component.i18n.json
 Action: Add missing translations or run with --allow-incomplete
 ```
@@ -1174,7 +1190,7 @@ Action: Add missing translations or run with --allow-incomplete
 
 Source (en): "Hello {{name}}!"
 Target (es): "¡Hola {{nombre}}!"
-              
+
 Issue: Placeholder names must match exactly
 Expected: {{name}}
 Found: {{nombre}}
@@ -1211,6 +1227,7 @@ Please fix the JSON syntax.
 ### Unit Tests
 
 **Parsers**
+
 - ✅ Parse XLIFF 2.0 correctly
 - ✅ Parse XLIFF 1.2 correctly
 - ✅ Handle invalid XLIFF gracefully
@@ -1220,6 +1237,7 @@ Please fix the JSON syntax.
 - ✅ Handle special characters and escaping
 
 **Converters**
+
 - ✅ Convert XLIFF → JSON all-in-one format
 - ✅ Convert JSON all-in-one → XLIFF
 - ✅ Preserve interpolation placeholders
@@ -1227,6 +1245,7 @@ Please fix the JSON syntax.
 - ✅ Handle nested keys correctly
 
 **Validators**
+
 - ✅ Detect duplicate keys
 - ✅ Detect missing translations
 - ✅ Validate interpolation consistency
@@ -1234,6 +1253,7 @@ Please fix the JSON syntax.
 - ✅ Detect template-translation mismatches
 
 **Mergers**
+
 - ✅ Merge multiple translation files
 - ✅ Preserve existing translations
 - ✅ Add new keys with empty translations
@@ -1241,6 +1261,7 @@ Please fix the JSON syntax.
 - ✅ Maintain key order (optional)
 
 **Builders**
+
 - ✅ Extract builder wraps Angular correctly
 - ✅ Per-component mode creates correct files
 - ✅ Merged mode creates single file
@@ -1250,22 +1271,26 @@ Please fix the JSON syntax.
 ### Integration Tests
 
 **Full Extraction Flow**
+
 - ✅ Extract from templates → generate translation files
 - ✅ Re-extract preserves existing translations
 - ✅ Re-extract adds new keys
 - ✅ Re-extract detects removed keys
 
 **Full Export Flow**
+
 - ✅ Export creates valid XLIFF for all languages
 - ✅ Angular build succeeds with exported XLIFF
 - ✅ Translations appear correctly in built app
 
 **Mode Switching**
+
 - ✅ Convert per-component → merged successfully
 - ✅ Convert merged → per-component successfully
 - ✅ No data loss during conversion
 
 **Watch Mode**
+
 - ✅ Watch detects template changes
 - ✅ Re-extracts only changed components
 - ✅ Updates are incremental and fast
@@ -1273,6 +1298,7 @@ Please fix the JSON syntax.
 ### Demo App Tests
 
 **Component Translations**
+
 - ✅ All i18n markers have corresponding translations
 - ✅ All languages render correctly
 - ✅ Interpolations work (variables display)
@@ -1280,12 +1306,14 @@ Please fix the JSON syntax.
 - ✅ Attribute translations work (alt, title, etc.)
 
 **Build Tests**
+
 - ✅ All locales build without errors
 - ✅ Correct file structure in dist/
 - ✅ Bundle sizes reasonable per locale
 - ✅ No missing translation warnings in console
 
 **End-to-End**
+
 - ✅ Add new component → extract → translate → build → verify
 - ✅ Update existing component → re-extract → verify merge → build
 - ✅ Switch language at build time → verify correct locale loads
@@ -1318,22 +1346,26 @@ demo-app/
 ### Features to Demonstrate
 
 **Home Component:**
+
 - Simple text translation
 - Greeting with interpolation: `Hello {{userName}}`
 - Plural forms: item count
 - Language switcher UI
 
 **User Profile Component:**
+
 - Nested keys: `profile.edit`, `profile.settings`, `profile.logout`
 - Form labels and validation messages
 - Attribute translations (placeholders, titles)
 
 **Settings Component:**
+
 - XML format demonstration
 - Complex interpolations
 - ICU plural/select syntax
 
 **Shared/Common:**
+
 - Header/footer translations
 - Navigation menu
 - Common buttons (Save, Cancel, Delete)
@@ -1352,7 +1384,7 @@ demo-app/
       <option value="fr">Français</option>
       <option value="de">Deutsch</option>
     </select>
-  `
+  `,
 })
 export class LanguageSwitcherComponent {
   switchLanguage(event: Event) {
@@ -1446,24 +1478,25 @@ ng add @gridatek/ngx-i18n-tools
    - Add npm scripts for i18n commands
 
 4. **Display Instructions**
+
    ```
    ✓ @gridatek/ngx-i18n-tools installed successfully!
-   
+
    Next steps:
    1. Add i18n markers to your templates:
       <h1 i18n="@@welcome">Welcome</h1>
-   
+
    2. Extract translations:
       npm run i18n:extract
-   
+
    3. Fill in translations in generated files
-   
+
    4. Export to XLIFF:
       npm run i18n:export
-   
+
    5. Build with localization:
       npm run build
-   
+
    Documentation: https://github.com/gridatek/ngx-i18n-tools
    ```
 
@@ -1551,17 +1584,17 @@ npm publish --access public
 
 ## Comparison: Per-Component vs Merged
 
-| Feature | Per-Component | Merged |
-|---------|--------------|--------|
-| **File count** | Many (one per component) | One |
-| **Co-location** | ✅ Perfect - translations next to templates | ❌ Separate directory |
-| **Team conflicts** | ✅ Minimal - isolated files | ⚠️ Possible on single file |
-| **Overview** | ⚠️ Must check multiple files | ✅ See all keys in one place |
-| **Lazy loading** | ✅ Easy per-route splitting | ⚠️ Harder to split |
-| **Migration** | ⚠️ New file structure | ✅ Similar to standard Angular |
-| **Discovery** | ✅ Obvious which file to edit | ⚠️ Must search in large file |
-| **Code review** | ✅ See template + translation together | ⚠️ Separate files |
-| **Best for** | Large teams, many components | Small/medium apps, single team |
+| Feature            | Per-Component                               | Merged                         |
+| ------------------ | ------------------------------------------- | ------------------------------ |
+| **File count**     | Many (one per component)                    | One                            |
+| **Co-location**    | ✅ Perfect - translations next to templates | ❌ Separate directory          |
+| **Team conflicts** | ✅ Minimal - isolated files                 | ⚠️ Possible on single file     |
+| **Overview**       | ⚠️ Must check multiple files                | ✅ See all keys in one place   |
+| **Lazy loading**   | ✅ Easy per-route splitting                 | ⚠️ Harder to split             |
+| **Migration**      | ⚠️ New file structure                       | ✅ Similar to standard Angular |
+| **Discovery**      | ✅ Obvious which file to edit               | ⚠️ Must search in large file   |
+| **Code review**    | ✅ See template + translation together      | ⚠️ Separate files              |
+| **Best for**       | Large teams, many components                | Small/medium apps, single team |
 
 **Important:** Both modes produce **identical XLIFF output** for Angular's build system!
 

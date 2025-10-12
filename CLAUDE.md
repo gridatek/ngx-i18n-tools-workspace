@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Workspace Structure
 
 This is an Angular workspace containing:
+
 - `projects/ngx-i18n-tools/` - Main library with Angular builders and converters
 - `projects/schematics/` - ng add support for easy installation
 - `projects/demo-app/` - Demo application showcasing both per-component and merged modes
@@ -118,23 +119,27 @@ ng run demo-app:i18n-split
 ## Key Implementation Files
 
 ### Builders
+
 - `projects/ngx-i18n-tools/src/lib/builders/extract-builder.ts` - Core extraction logic, wraps Angular CLI
 - `projects/ngx-i18n-tools/src/lib/builders/export-builder.ts` - XLIFF generation from all-in-one format
 - `projects/ngx-i18n-tools/src/lib/builders/schema.json` - Builder option schemas
 
 ### Converters
+
 - `projects/ngx-i18n-tools/src/lib/converters/xliff-to-json.converter.ts` - Parse Angular's XLIFF output
 - `projects/ngx-i18n-tools/src/lib/converters/json-to-xliff.converter.ts` - Generate Angular-compatible XLIFF
 - `projects/ngx-i18n-tools/src/lib/converters/xml-parser.ts` - XML parsing utilities
 - `projects/ngx-i18n-tools/src/lib/converters/xliff-generator.ts` - XLIFF 1.2 and 2.0 generation
 
 ### Utilities
+
 - `projects/ngx-i18n-tools/src/lib/utils/template-scanner.ts` - Find and analyze templates
 - `projects/ngx-i18n-tools/src/lib/utils/file-merger.ts` - Merge translation files, preserve existing
 - `projects/ngx-i18n-tools/src/lib/utils/validator.ts` - Comprehensive validation (duplicates, interpolations, completeness)
 - `projects/ngx-i18n-tools/src/lib/utils/angular-wrapper.ts` - Spawn Angular CLI commands
 
 ### Types
+
 - `projects/ngx-i18n-tools/src/lib/types/index.ts` - TypeScript interfaces for all data structures
 
 ## Important Technical Details
@@ -142,6 +147,7 @@ ng run demo-app:i18n-split
 ### Extract Builder Implementation
 
 The extract builder MUST:
+
 1. Call Angular's native `ng extract-i18n --format=xliff2 --output-path=temp/`
 2. Parse the generated XLIFF to extract all translation units
 3. Group messages by source file (for per-component mode) or merge all (for merged mode)
@@ -153,6 +159,7 @@ The extract builder MUST:
 ### Validation Requirements
 
 When validating translations, check for:
+
 - Duplicate keys across files (error)
 - Missing target language translations (warning)
 - Interpolation placeholder mismatches (error) - e.g., `{{name}}` vs `{{nombre}}`
@@ -163,6 +170,7 @@ When validating translations, check for:
 ### XLIFF Generation
 
 When generating XLIFF:
+
 - Support both XLIFF 1.2 and 2.0 formats
 - Preserve interpolation placeholders as `<ph>` elements
 - Maintain ICU syntax for plurals (e.g., `{count, plural, ...}`)
@@ -245,6 +253,7 @@ Typical `angular.json` configuration for a project using the library:
 ## Schematics (`ng add`)
 
 The `ng add @gridatek/ngx-i18n-tools` schematic should:
+
 1. Update `angular.json` with extract-i18n and i18n-export configurations
 2. Create `src/locale/` directory
 3. Add npm scripts to `package.json` for i18n commands

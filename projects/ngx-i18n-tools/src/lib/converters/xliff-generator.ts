@@ -14,9 +14,9 @@ export function generateXliff2(xliffFile: XliffFile): string {
       file: {
         '@_id': 'ngi18n',
         '@_original': 'ng.template',
-        unit: xliffFile.units.map(unit => generateUnit2(unit, xliffFile.targetLanguage))
-      }
-    }
+        unit: xliffFile.units.map((unit) => generateUnit2(unit, xliffFile.targetLanguage)),
+      },
+    },
   };
 
   if (xliffFile.targetLanguage) {
@@ -28,7 +28,7 @@ export function generateXliff2(xliffFile: XliffFile): string {
     attributeNamePrefix: '@_',
     format: true,
     indentBy: '  ',
-    suppressEmptyNode: true
+    suppressEmptyNode: true,
   });
 
   return builder.build(xmlObj);
@@ -48,10 +48,12 @@ export function generateXliff1(xliffFile: XliffFile): string {
         '@_datatype': 'plaintext',
         '@_original': 'ng.template',
         body: {
-          'trans-unit': xliffFile.units.map(unit => generateUnit1(unit, xliffFile.targetLanguage))
-        }
-      }
-    }
+          'trans-unit': xliffFile.units.map((unit) =>
+            generateUnit1(unit, xliffFile.targetLanguage),
+          ),
+        },
+      },
+    },
   };
 
   if (xliffFile.targetLanguage) {
@@ -63,7 +65,7 @@ export function generateXliff1(xliffFile: XliffFile): string {
     attributeNamePrefix: '@_',
     format: true,
     indentBy: '  ',
-    suppressEmptyNode: true
+    suppressEmptyNode: true,
   });
 
   return builder.build(xmlObj);
@@ -74,7 +76,7 @@ export function generateXliff1(xliffFile: XliffFile): string {
  */
 function generateUnit2(unit: XliffUnit, targetLanguage?: string): any {
   const segment: any = {
-    source: processInterpolations(unit.source)
+    source: processInterpolations(unit.source),
   };
 
   if (targetLanguage && unit.target) {
@@ -83,12 +85,12 @@ function generateUnit2(unit: XliffUnit, targetLanguage?: string): any {
 
   const unitObj: any = {
     '@_id': unit.id,
-    segment
+    segment,
   };
 
   if (unit.note) {
     unitObj.notes = {
-      note: unit.note
+      note: unit.note,
     };
   }
 
@@ -102,7 +104,7 @@ function generateUnit1(unit: XliffUnit, targetLanguage?: string): any {
   const transUnit: any = {
     '@_id': unit.id,
     '@_datatype': 'html',
-    source: processInterpolations(unit.source, '1.2')
+    source: processInterpolations(unit.source, '1.2'),
   };
 
   if (targetLanguage && unit.target) {
@@ -153,15 +155,15 @@ function processInterpolations(text: string, version: '1.2' | '2.0' = '2.0'): an
         ph: {
           '@_id': phId.toString(),
           '@_equiv': 'INTERPOLATION',
-          '@_disp': `{{${varName}}}`
-        }
+          '@_disp': `{{${varName}}}`,
+        },
       });
     } else {
       parts.push({
         x: {
           '@_id': phId.toString(),
-          '@_equiv-text': `{{${varName}}}`
-        }
+          '@_equiv-text': `{{${varName}}}`,
+        },
       });
     }
 
@@ -181,8 +183,8 @@ function processInterpolations(text: string, version: '1.2' | '2.0' = '2.0'): an
 
   // Return mixed content structure
   return {
-    '#text': parts.filter(p => typeof p === 'string').join(''),
-    ...(parts.find(p => typeof p === 'object') || {})
+    '#text': parts.filter((p) => typeof p === 'string').join(''),
+    ...(parts.find((p) => typeof p === 'object') || {}),
   };
 }
 
@@ -193,13 +195,13 @@ export function generateXliff(
   units: XliffUnit[],
   sourceLanguage: string,
   targetLanguage: string | undefined,
-  format: 'xliff' | 'xliff2'
+  format: 'xliff' | 'xliff2',
 ): string {
   const xliffFile: XliffFile = {
     version: format === 'xliff2' ? '2.0' : '1.2',
     sourceLanguage,
     targetLanguage,
-    units
+    units,
   };
 
   return format === 'xliff2' ? generateXliff2(xliffFile) : generateXliff1(xliffFile);

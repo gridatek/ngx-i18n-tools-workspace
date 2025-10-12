@@ -13,7 +13,7 @@ export interface AngularCommandResult {
 export async function runAngularExtractI18n(
   context: BuilderContext,
   outputPath: string,
-  format: 'xliff' | 'xliff2' = 'xliff2'
+  format: 'xliff' | 'xliff2' = 'xliff2',
 ): Promise<AngularCommandResult> {
   const projectName = context.target?.project;
 
@@ -21,7 +21,7 @@ export async function runAngularExtractI18n(
     return {
       success: false,
       output: '',
-      error: 'No project name specified'
+      error: 'No project name specified',
     };
   }
 
@@ -29,7 +29,7 @@ export async function runAngularExtractI18n(
     'extract-i18n',
     projectName,
     `--format=${format}`,
-    `--output-path=${outputPath}`
+    `--output-path=${outputPath}`,
   ]);
 }
 
@@ -38,7 +38,7 @@ export async function runAngularExtractI18n(
  */
 export async function executeAngularCommand(
   context: BuilderContext,
-  args: string[]
+  args: string[],
 ): Promise<AngularCommandResult> {
   return new Promise((resolve) => {
     let output = '';
@@ -48,7 +48,7 @@ export async function executeAngularCommand(
 
     const ngProcess = spawn('ng', args, {
       cwd: context.workspaceRoot,
-      shell: true
+      shell: true,
     });
 
     ngProcess.stdout?.on('data', (data) => {
@@ -67,13 +67,13 @@ export async function executeAngularCommand(
       if (code === 0) {
         resolve({
           success: true,
-          output
+          output,
         });
       } else {
         resolve({
           success: false,
           output,
-          error: errorOutput || `Process exited with code ${code}`
+          error: errorOutput || `Process exited with code ${code}`,
         });
       }
     });
@@ -82,7 +82,7 @@ export async function executeAngularCommand(
       resolve({
         success: false,
         output,
-        error: err.message
+        error: err.message,
       });
     });
   });

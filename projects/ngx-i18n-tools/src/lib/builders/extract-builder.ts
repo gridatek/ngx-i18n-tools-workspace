@@ -29,7 +29,7 @@ export default createBuilder<ExtractOptions>(
       if (!angularResult.success) {
         return {
           success: false,
-          error: `Angular extraction failed: ${angularResult.error}`
+          error: `Angular extraction failed: ${angularResult.error}`,
         };
       }
 
@@ -52,7 +52,7 @@ export default createBuilder<ExtractOptions>(
       context.logger.error(`Extraction failed: ${error.message}`);
       return { success: false, error: error.message };
     }
-  }
+  },
 );
 
 /**
@@ -61,7 +61,7 @@ export default createBuilder<ExtractOptions>(
 async function extractPerComponent(
   options: ExtractOptions,
   context: BuilderContext,
-  xliffPath: string
+  xliffPath: string,
 ): Promise<BuilderOutput> {
   // Find all component templates
   const templates = await findTemplates(options.templatePattern, context.workspaceRoot);
@@ -74,7 +74,7 @@ async function extractPerComponent(
   // Group templates by component
   const components = await groupTemplatesByComponent(
     templates,
-    options.translationFileNaming || '{component}.i18n.json'
+    options.translationFileNaming || '{component}.i18n.json',
   );
 
   // Read extracted XLIFF
@@ -112,14 +112,12 @@ async function extractPerComponent(
       options.targetLocales,
       {
         preserveExisting: options.preserveExisting,
-        cleanUnused: options.cleanUnused
-      }
+        cleanUnused: options.cleanUnused,
+      },
     );
 
     // Sort keys if requested
-    const finalTranslations = options.sortKeys
-      ? sortTranslations(merged)
-      : merged;
+    const finalTranslations = options.sortKeys ? sortTranslations(merged) : merged;
 
     // Write translation file
     await writeTranslationFile(component.translationPath, finalTranslations, options.outputFormat);
@@ -129,7 +127,7 @@ async function extractPerComponent(
     filesProcessed++;
 
     context.logger.info(
-      `✓ ${path.relative(context.workspaceRoot, component.templatePath)} → ${path.relative(context.workspaceRoot, component.translationPath)}`
+      `✓ ${path.relative(context.workspaceRoot, component.templatePath)} → ${path.relative(context.workspaceRoot, component.translationPath)}`,
     );
 
     if (result.added.length > 0) {
@@ -139,11 +137,15 @@ async function extractPerComponent(
       context.logger.warn(`  - Updated source for ${result.updated.length} keys`);
     }
     if (result.removed.length > 0 && !options.cleanUnused) {
-      context.logger.warn(`  - ${result.removed.length} unused keys (use --clean-unused to remove)`);
+      context.logger.warn(
+        `  - ${result.removed.length} unused keys (use --clean-unused to remove)`,
+      );
     }
   }
 
-  context.logger.info(`\n📊 Total: ${totalKeys} keys extracted across ${filesProcessed} components`);
+  context.logger.info(
+    `\n📊 Total: ${totalKeys} keys extracted across ${filesProcessed} components`,
+  );
 
   // Calculate missing translations
   const missingByLocale = calculateMissing(extracted, options.targetLocales);
@@ -162,7 +164,7 @@ async function extractPerComponent(
 async function extractMerged(
   options: ExtractOptions,
   context: BuilderContext,
-  xliffPath: string
+  xliffPath: string,
 ): Promise<BuilderOutput> {
   if (!options.outputFile) {
     return { success: false, error: 'outputFile is required for merged mode' };
@@ -195,8 +197,8 @@ async function extractMerged(
     options.targetLocales,
     {
       preserveExisting: options.preserveExisting,
-      cleanUnused: options.cleanUnused
-    }
+      cleanUnused: options.cleanUnused,
+    },
   );
 
   // Sort keys if requested
@@ -237,7 +239,7 @@ async function extractMerged(
 async function writeTranslationFile(
   filePath: string,
   translations: TranslationSource,
-  format: 'json' | 'xml'
+  format: 'json' | 'xml',
 ): Promise<void> {
   const dir = path.dirname(filePath);
   await fs.promises.mkdir(dir, { recursive: true });
@@ -269,7 +271,7 @@ function sortTranslations(translations: TranslationSource): TranslationSource {
  */
 function calculateMissing(
   translations: TranslationSource,
-  targetLocales: string[]
+  targetLocales: string[],
 ): Map<string, number> {
   const missing = new Map<string, number>();
 

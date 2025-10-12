@@ -15,14 +15,14 @@ export function ngAdd(options: Schema): Rule {
     createLocaleDirectory(),
     updatePackageJsonScripts(),
     addGitIgnoreEntries(),
-    installDependencies()
+    installDependencies(),
   ]);
 }
 
 function addBuilderConfiguration(options: Schema): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     const workspace = await getWorkspace(tree);
-    const projectName = options.project || workspace.extensions['defaultProject'] as string;
+    const projectName = options.project || (workspace.extensions['defaultProject'] as string);
 
     if (!projectName) {
       throw new Error('No project specified and no default project found');
@@ -36,7 +36,7 @@ function addBuilderConfiguration(options: Schema): Rule {
     const mode = options.mode || 'per-component';
     const targetLocales = options.targetLocales || ['es', 'fr', 'de'];
 
-    return updateWorkspace(workspace => {
+    return updateWorkspace((workspace) => {
       const project = workspace.projects.get(projectName);
       if (!project) return;
 
@@ -49,15 +49,14 @@ function addBuilderConfiguration(options: Schema): Rule {
           templatePattern: 'src/**/*.component.html',
           ...(mode === 'per-component'
             ? { translationFileNaming: '{component}.i18n.json' }
-            : { outputFile: 'src/locale/translations.json' }
-          ),
+            : { outputFile: 'src/locale/translations.json' }),
           outputFormat: 'json',
           sourceLocale: 'en',
           targetLocales,
           preserveExisting: true,
           cleanUnused: false,
-          validateInterpolations: true
-        }
+          validateInterpolations: true,
+        },
       });
 
       // Add i18n-export builder
@@ -67,13 +66,12 @@ function addBuilderConfiguration(options: Schema): Rule {
         options: {
           ...(mode === 'merged'
             ? { source: 'src/locale/translations.json' }
-            : { translationPattern: 'src/**/*.i18n.{json,xml}' }
-          ),
+            : { translationPattern: 'src/**/*.i18n.{json,xml}' }),
           outputPath: 'src/locale',
           format: 'xliff2',
           sourceLocale: 'en',
-          targetLocales
-        }
+          targetLocales,
+        },
       });
 
       // Add i18n-validate builder
@@ -83,18 +81,17 @@ function addBuilderConfiguration(options: Schema): Rule {
         options: {
           ...(mode === 'merged'
             ? { source: 'src/locale/translations.json' }
-            : { translationPattern: 'src/**/*.i18n.{json,xml}' }
-          ),
+            : { translationPattern: 'src/**/*.i18n.{json,xml}' }),
           sourceLocale: 'en',
-          targetLocales
-        }
+          targetLocales,
+        },
       });
 
       // Configure i18n in project
       if (!project.extensions['i18n']) {
         project.extensions['i18n'] = {
           sourceLocale: 'en',
-          locales: {}
+          locales: {},
         };
       }
 
@@ -149,7 +146,7 @@ function updatePackageJsonScripts(): Rule {
       'i18n:extract': 'ng run $npm_package_name:extract-i18n',
       'i18n:export': 'ng run $npm_package_name:i18n-export',
       'i18n:sync': 'npm run i18n:extract && npm run i18n:export',
-      'i18n:validate': 'ng run $npm_package_name:i18n-validate'
+      'i18n:validate': 'ng run $npm_package_name:i18n-validate',
     };
 
     let addedScripts = false;
@@ -185,10 +182,7 @@ function addGitIgnoreEntries(): Rule {
 
     let content = gitignoreContent.toString();
 
-    const entriesToAdd = [
-      '# ngx-i18n-tools temp files',
-      '.temp-i18n/'
-    ];
+    const entriesToAdd = ['# ngx-i18n-tools temp files', '.temp-i18n/'];
 
     let modified = false;
 

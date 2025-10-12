@@ -18,14 +18,9 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "lib": ["ES2022", "dom"],
     "paths": {
-      "@gridatek/ngx-i18n-tools": [
-        "projects/ngx-i18n-tools/src/public-api.ts"
-      ]
+      "@gridatek/ngx-i18n-tools": ["projects/ngx-i18n-tools/src/public-api.ts"]
     }
   },
   "angularCompilerOptions": {

@@ -32,7 +32,7 @@ export default createBuilder<ValidateOptions>(
       } else if (options.translationPattern) {
         const filePaths = await glob(options.translationPattern, {
           cwd: context.workspaceRoot,
-          absolute: true
+          absolute: true,
         });
 
         for (const filePath of filePaths) {
@@ -42,7 +42,7 @@ export default createBuilder<ValidateOptions>(
       } else {
         return {
           success: false,
-          error: 'Either "source" or "translationPattern" must be specified'
+          error: 'Either "source" or "translationPattern" must be specified',
         };
       }
 
@@ -61,7 +61,7 @@ export default createBuilder<ValidateOptions>(
       const validation = validateTranslations(
         allTranslations,
         options.targetLocales,
-        options.sourceLocale
+        options.sourceLocale,
       );
 
       const duplicateErrors = validateDuplicateKeys(files);
@@ -100,18 +100,22 @@ export default createBuilder<ValidateOptions>(
 
       // Report coverage
       context.logger.info('\n📊 Translation Coverage:');
-      context.logger.info(`Overall: ${coverage.coveragePercentage}% (${coverage.completeTranslations}/${coverage.totalTranslations})`);
+      context.logger.info(
+        `Overall: ${coverage.coveragePercentage}% (${coverage.completeTranslations}/${coverage.totalTranslations})`,
+      );
       context.logger.info('\nBy Language:');
 
       for (const [locale, stats] of coverage.byLanguage.entries()) {
         const icon = stats.percentage === 100 ? '✓' : '⚠️';
-        context.logger.info(`  ${icon} ${locale}: ${stats.percentage}% (${stats.complete}/${coverage.totalKeys})`);
+        context.logger.info(
+          `  ${icon} ${locale}: ${stats.percentage}% (${stats.complete}/${coverage.totalKeys})`,
+        );
       }
 
       if (hasErrors) {
         return {
           success: false,
-          error: `Validation failed with ${validation.errors.length + duplicateErrors.length} errors`
+          error: `Validation failed with ${validation.errors.length + duplicateErrors.length} errors`,
         };
       }
 
@@ -120,7 +124,7 @@ export default createBuilder<ValidateOptions>(
       context.logger.error(`Validation failed: ${error.message}`);
       return { success: false, error: error.message };
     }
-  }
+  },
 );
 
 async function loadTranslationFile(filePath: string): Promise<TranslationSource> {
