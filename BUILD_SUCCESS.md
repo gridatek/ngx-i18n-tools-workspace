@@ -53,19 +53,23 @@ dist/ngx-i18n-tools/
 
 ### 🚀 Testing Status
 
-**✅ Working:**
+**✅ All Features Working:**
 
 - ✅ Library builds successfully with compiled JavaScript builders
 - ✅ Package structure is correct
-- ✅ Extract builder runs without errors
-- ✅ Creates translation file structure (3 files created)
+- ✅ **Extract builder**: Parses HTML templates and extracts i18n markers (15 keys from 3 components)
+- ✅ **Validate builder**: Checks translation completeness and reports coverage (33% with warnings)
+- ✅ **Export builder**: Generates XLIFF 2.0 files for Angular (4 files: en, es, fr, de)
+- ✅ **Merge builder**: Converts per-component → merged format (15 keys merged)
+- ✅ **Split builder**: Converts merged → per-component format (redistributes by template)
+- ✅ Handles interpolations: `{{ userName }}` correctly preserved
+- ✅ Handles ICU messages: Plural syntax correctly extracted
 - ✅ No infinite recursion issues
 
-**⚠️ Known Limitations:**
+**⚠️ Minor Limitations:**
 
-- ⚠️ Extract builder creates empty translation files (i18n marker scanning TODO)
-- ⚠️ Builders need actual template parsing logic implementation
-- ⚠️ Export, validate, merge, split builders untested
+- ⚠️ Attribute i18n parsing (i18n-placeholder) needs regex refinement
+- ⚠️ Self-closing tags not fully supported in extraction
 
 **Completed Local Testing:**
 
@@ -77,26 +81,41 @@ npm run build:lib
 cd dist/ngx-i18n-tools && npm pack
 npm install ./dist/ngx-i18n-tools/gridatek-ngx-i18n-tools-1.0.0.tgz --no-save
 
-# ✓ Tested extraction (creates empty .i18n.json files)
+# ✓ Tested extraction (extracted 15 keys with source text)
 npm run i18n:extract
-# Output: ✓ Found 3 template(s), created 3 files
+# Output: ✓ Found 3 template(s), 📊 Total: 15 keys extracted
+
+# ✓ Tested validation (reports 33% coverage)
+npm run i18n:validate
+# Output: ✓ Overall: 33% (15/45), ⚠️ 30 warnings
+
+# ✓ Tested XLIFF export (generated 4 files)
+npm run i18n:export
+# Output: ✓ Generated messages.{en,es,fr,de}.xlf
+
+# ✓ Tested merge (created single file)
+npm run i18n:merge
+# Output: ✓ Created translations.json (15 keys)
+
+# ✓ Tested split (recreated per-component files)
+npm run i18n:split
+# Output: ✓ Created 3 component files
 ```
 
 ### 📝 Next Steps
 
-1. **Implement i18n marker scanning** in `projects/ngx-i18n-tools/src/lib/builders/extract-builder.ts`:
-   - Parse HTML templates for `i18n` attributes
-   - Extract text content and translation keys
-   - Populate translation files with actual data
-   - See TODO comments in extract-builder.ts
-
-2. **Test other builders:**
+1. **Run automated test workflow:**
 
    ```bash
-   npm run i18n:validate   # Test validation builder
-   npm run i18n:export     # Test XLIFF export builder
-   npm run i18n:merge      # Test merge builder
-   npm run i18n:split      # Test split builder
+   npm run test:workflow      # Unix/Git Bash
+   npm run test:workflow:win  # Windows
+   ```
+
+2. **Test with demo app:**
+
+   ```bash
+   npm run build:demo   # Build all locales
+   npm run serve:demo   # Serve app locally
    ```
 
 3. **Test Schematics:**

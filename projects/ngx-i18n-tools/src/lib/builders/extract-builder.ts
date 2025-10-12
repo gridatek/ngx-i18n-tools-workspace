@@ -4,7 +4,11 @@ import * as path from 'path';
 import { ExtractOptions, TranslationSource } from '../types';
 import { runAngularExtractI18n } from '../utils/angular-wrapper';
 import { xliffToJson } from '../converters/xliff-to-json.converter';
-import { findTemplates, groupTemplatesByComponent } from '../utils/template-scanner';
+import {
+  findTemplates,
+  groupTemplatesByComponent,
+  getTemplateEntries,
+} from '../utils/template-scanner';
 import { mergeTranslations } from '../utils/file-merger';
 import { parseTranslationXml, buildTranslationXml } from '../converters/xml-parser';
 
@@ -17,12 +21,6 @@ export default createBuilder<ExtractOptions>(
       context.logger.info(`🔍 Extracting i18n in ${options.mode} mode...`);
       context.logger.info(`📁 Workspace: ${context.workspaceRoot}`);
       context.logger.info(`📝 Pattern: ${options.templatePattern}`);
-
-      // For now, create empty translation files as a placeholder
-      // TODO: Implement actual template scanning and i18n extraction
-      context.logger.warn(
-        '⚠️  Note: This is a simplified extraction - manual translation setup required',
-      );
 
       // Step 1: Convert based on mode
       let result: BuilderOutput;
@@ -64,18 +62,30 @@ async function extractPerComponent(
     options.translationFileNaming || '{component}.i18n.json',
   );
 
-  // Create empty translation structure for now
-  // TODO: Scan templates for i18n markers
-  const extracted: TranslationSource = {};
-
   let totalKeys = 0;
   let filesProcessed = 0;
 
   // For each component, create/update translation file
   for (const component of components) {
-    // Filter keys that belong to this template
-    // For simplicity, we'll distribute all keys to each component
-    // In a real implementation, you'd map keys to templates
+    // Extract i18n entries from this template
+    const entries = await getTemplateEntries(component.templatePath);
+
+    // Convert entries to TranslationSource format
+    const extracted: TranslationSource = {};
+    for (const entry of entries) {
+      const translations: Record<string, string> = {};
+
+      // Set source locale text
+      translations[options.sourceLocale] = entry.text;
+
+      // Initialize empty translations for target locales
+      for (const locale of options.targetLocales) {
+        translations[locale] = '';
+      }
+
+      extracted[entry.key] = translations;
+    }
+
     const componentTranslations: TranslationSource = extracted;
 
     // Load existing translations if present
@@ -132,14 +142,6 @@ async function extractPerComponent(
     `\n📊 Total: ${totalKeys} keys extracted across ${filesProcessed} components`,
   );
 
-  // Calculate missing translations
-  const missingByLocale = calculateMissing(extracted, options.targetLocales);
-  for (const [locale, count] of missingByLocale.entries()) {
-    if (count > 0) {
-      context.logger.warn(`⚠️  Missing translations for ${locale}: ${count}`);
-    }
-  }
-
   return { success: true };
 }
 
@@ -156,9 +158,37 @@ async function extractMerged(
 
   const outputPath = path.join(context.workspaceRoot, options.outputFile);
 
-  // Create empty translation structure for now
-  // TODO: Scan templates for i18n markers
+  // Find all templates
+  const templates = await findTemplates(options.templatePattern, context.workspaceRoot);
+
+  if (templates.length === 0) {
+    context.logger.warn(`No templates found matching pattern: ${options.templatePattern}`);
+    return { success: true };
+  }
+
+  context.logger.info(`✓ Found ${templates.length} template(s)`);
+
+  // Extract i18n entries from all templates
   const extracted: TranslationSource = {};
+  for (const templatePath of templates) {
+    const entries = await getTemplateEntries(templatePath);
+
+    for (const entry of entries) {
+      if (!extracted[entry.key]) {
+        const translations: Record<string, string> = {};
+
+        // Set source locale text
+        translations[options.sourceLocale] = entry.text;
+
+        // Initialize empty translations for target locales
+        for (const locale of options.targetLocales) {
+          translations[locale] = '';
+        }
+
+        extracted[entry.key] = translations;
+      }
+    }
+  }
 
   // Load existing translations if present
   let existingTranslations: TranslationSource = {};

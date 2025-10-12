@@ -1,1 +1,38 @@
-{}
+{
+  "profile.title": {
+    "en": "User Profile",
+    "es": "",
+    "fr": "",
+    "de": ""
+  },
+  "profile.name.label": {
+    "en": "Name:",
+    "es": "",
+    "fr": "",
+    "de": ""
+  },
+  "profile.email.label": {
+    "en": "Email:",
+    "es": "",
+    "fr": "",
+    "de": ""
+  },
+  "profile.edit": {
+    "en": "Edit Profile",
+    "es": "",
+    "fr": "",
+    "de": ""
+  },
+  "profile.settings": {
+    "en": "Settings",
+    "es": "",
+    "fr": "",
+    "de": ""
+  },
+  "profile.search.title": {
+    "en": "Search your profile",
+    "es": "",
+    "fr": "",
+    "de": ""
+  }
+}

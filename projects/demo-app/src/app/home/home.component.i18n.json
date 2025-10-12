@@ -1,1 +1,32 @@
-{}
+{
+  "welcome": {
+    "en": "Welcome",
+    "es": "Bienvenido",
+    "fr": "Bienvenue",
+    "de": "Willkommen"
+  },
+  "home.subtitle": {
+    "en": "Your personal dashboard",
+    "es": "Tu panel personal",
+    "fr": "Votre tableau de bord personnel",
+    "de": "Ihr persönliches Dashboard"
+  },
+  "greeting": {
+    "en": "Hello {{ userName }}!",
+    "es": "¡Hola {{ userName }}!",
+    "fr": "Bonjour {{ userName }}!",
+    "de": "Hallo {{ userName }}!"
+  },
+  "items.count": {
+    "en": "{itemCount, plural, =0 {No items} =1 {One item} other {{{itemCount}} items} }",
+    "es": "{itemCount, plural, =0 {Sin elementos} =1 {Un elemento} other {{{itemCount}} elementos} }",
+    "fr": "{itemCount, plural, =0 {Aucun élément} =1 {Un élément} other {{{itemCount}} éléments} }",
+    "de": "{itemCount, plural, =0 {Keine Elemente} =1 {Ein Element} other {{{itemCount}} Elemente} }"
+  },
+  "home.action": {
+    "en": "Get Started",
+    "es": "Comenzar",
+    "fr": "Commencer",
+    "de": "Anfangen"
+  }
+}

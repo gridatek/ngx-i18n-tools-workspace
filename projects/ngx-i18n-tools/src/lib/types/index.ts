@@ -3,6 +3,7 @@ import { JsonObject } from '@angular-devkit/core';
 /**
  * Translation source format (all-in-one)
  * Key -> Language Code -> Translation
+ * Note: Source locale is included as one of the language codes
  */
 export interface TranslationSource {
   [key: string]: {
