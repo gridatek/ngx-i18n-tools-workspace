@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "NgAddSchema",
+  "title": "ng-add schematic",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Name of the project to add ngx-i18n-tools to"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["per-component", "merged"],
+      "default": "per-component",
+      "description": "Translation file mode"
+    },
+    "targetLocales": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": ["es", "fr", "de"],
+      "description": "Target languages"
+    }
+  }
+}

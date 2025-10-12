@@ -1,0 +1,52 @@
+{
+  "name": "ngx-i18n-tools-workspace",
+  "version": "1.0.0",
+  "description": "Angular i18n tooling library workspace",
+  "scripts": {
+    "build:lib": "ng build ngx-i18n-tools",
+    "build:lib:watch": "ng build ngx-i18n-tools --watch",
+    "test:lib": "ng test ngx-i18n-tools",
+    "lint:lib": "ng lint ngx-i18n-tools",
+    "serve:demo": "ng serve demo-app",
+    "build:demo": "ng build demo-app",
+    "i18n:extract": "ng run demo-app:extract-i18n",
+    "i18n:export": "ng run demo-app:i18n-export",
+    "i18n:sync": "npm run i18n:extract && npm run i18n:export",
+    "i18n:validate": "ng run demo-app:i18n-validate"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^17.0.0",
+    "@angular/common": "^17.0.0",
+    "@angular/compiler": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@angular/forms": "^17.0.0",
+    "@angular/platform-browser": "^17.0.0",
+    "@angular/platform-browser-dynamic": "^17.0.0",
+    "@angular/router": "^17.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/architect": "^0.1700.0",
+    "@angular-devkit/build-angular": "^17.0.0",
+    "@angular-devkit/core": "^17.0.0",
+    "@angular-devkit/schematics": "^17.0.0",
+    "@angular/cli": "^17.0.0",
+    "@angular/compiler-cli": "^17.0.0",
+    "@schematics/angular": "^17.0.0",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "^20.0.0",
+    "fast-xml-parser": "^4.3.2",
+    "glob": "^10.3.10",
+    "jasmine-core": "~5.1.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "ng-packagr": "^17.0.0",
+    "typescript": "~5.2.2"
+  }
+}
