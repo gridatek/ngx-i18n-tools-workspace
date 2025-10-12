@@ -1,5 +1,9 @@
 # ngx-i18n-tools Workspace
 
+[![CI](https://github.com/gridatek/ngx-i18n-tools/workflows/CI/badge.svg)](https://github.com/gridatek/ngx-i18n-tools/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/%40gridatek%2Fngx-i18n-tools.svg)](https://www.npmjs.com/package/@gridatek/ngx-i18n-tools)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 This workspace contains the `@gridatek/ngx-i18n-tools` Angular library and a demo application.
 
 ## Project Structure
@@ -91,6 +95,43 @@ npm run i18n:validate      # Validate translations
 ## Documentation
 
 See [ngx-i18n-tools-doc.md](./ngx-i18n-tools-doc.md) for complete documentation.
+
+## CI/CD
+
+This project includes comprehensive CI/CD workflows:
+
+### Continuous Integration (`.github/workflows/ci.yml`)
+
+Runs on every push and pull request:
+
+- **Lint**: Code quality checks
+- **Build Library**: Compiles the library
+- **Test Library**: Unit tests with ChromeHeadless
+- **Build Demo**: Builds the demo application
+- **E2E Workflow**: Tests the complete i18n extraction/export workflow
+- **Matrix Build**: Tests on Ubuntu, Windows, and macOS with Node 18.x and 20.x
+
+### Release Workflow (`.github/workflows/release.yml`)
+
+Triggered on version tags (e.g., `v1.0.0`):
+
+- Runs tests
+- Builds the library
+- Publishes to npm
+- Creates GitHub release
+- Builds and deploys demo app to GitHub Pages
+
+### Publishing a Release
+
+```bash
+# 1. Update version in package.json
+npm version patch|minor|major
+
+# 2. Push the tag
+git push origin v1.0.0
+
+# 3. GitHub Actions will automatically publish to npm
+```
 
 ## License
 
