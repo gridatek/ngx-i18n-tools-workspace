@@ -312,7 +312,7 @@ Typical `angular.json` configuration for a project using the library:
 ## Technical Constraints
 
 - **Minimum Angular Version:** 17.0.0
-- **Node Version:** >=18.0.0
+- **Node Version:** >=22.0.0
 - **TypeScript Version:** >=5.0.0
 - **Output Formats:** Must be 100% compatible with Angular's compiler
 - **XLIFF Versions:** Support both 1.2 and 2.0
@@ -340,7 +340,7 @@ The `ng add @gridatek/ngx-i18n-tools` schematic should:
 
 ### Continuous Integration (`.github/workflows/ci.yml`)
 
-The CI workflow runs on every push and pull request to `main` and `develop` branches:
+The CI workflow runs on every push and pull request to the `main` branch:
 
 **Jobs:**
 
@@ -349,7 +349,7 @@ The CI workflow runs on every push and pull request to `main` and `develop` bran
 - **Test Library**: Runs unit tests with ChromeHeadless
 - **Build Demo**: Builds the demo app to verify integration
 - **E2E Workflow**: Tests the complete i18n extraction/export workflow
-- **Matrix Build**: Tests on Ubuntu/Windows/macOS with Node 18.x and 20.x
+- **Matrix Build**: Tests on Ubuntu/Windows/macOS with Node 22.x
 - **Code Quality**: Checks formatting with Prettier and TypeScript compilation
 
 ### Release Workflow (`.github/workflows/release.yml`)
@@ -409,7 +409,7 @@ Before publishing a new version:
 
 ### Testing on Multiple Platforms
 
-The CI/CD pipeline tests on Ubuntu, Windows, and macOS with Node 18.x and 20.x. When making changes that involve:
+The CI/CD pipeline tests on Ubuntu, Windows, and macOS with Node 22.x. When making changes that involve:
 
 - File path manipulation
 - Shell command execution
