@@ -128,6 +128,13 @@ jobs:
       - name: Build library
         run: npm run build:lib
 
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
+
       - name: Extract i18n
         run: npm run i18n:extract
         continue-on-error: true
@@ -190,6 +197,13 @@ jobs:
 
       - name: Build library
         run: npm run build:lib
+
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
 
       - name: Extract translations
         run: npm run i18n:extract
@@ -255,6 +269,13 @@ jobs:
       - name: Build library
         run: npm run build:lib
 
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
+
       - name: Test XML format workflow
         run: npm run test:xml
 
@@ -278,6 +299,13 @@ jobs:
 
       - name: Build library
         run: npm run build:lib
+
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
 
       - name: Switch to XML format
         run: npm run switch:xml
