@@ -7,7 +7,6 @@
     "build:schematics": "tsc -p projects/schematics/tsconfig.json && node scripts/copy-schematics.js",
     "build:lib": "ng build ngx-i18n-tools && npm run build:builders && npm run build:schematics",
     "build:lib:watch": "ng build ngx-i18n-tools --watch",
-    "test:lib": "ng test ngx-i18n-tools",
     "lint:lib": "ng lint ngx-i18n-tools",
     "serve:demo": "ng serve demo-app",
     "build:demo": "ng build demo-app",
