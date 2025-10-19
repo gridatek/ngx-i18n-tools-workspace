@@ -81,8 +81,7 @@ npm run build:demo
 ```bash
 npm run build:lib          # Build library once
 npm run build:lib:watch    # Build library in watch mode
-npm run test:lib           # Run library tests
-npm run lint:lib           # Lint library code
+npm run lint:lib           # Lint library code (if configured)
 ```
 
 ### Demo App Development
@@ -175,39 +174,53 @@ This project includes comprehensive CI/CD workflows:
 
 Runs on every push and pull request:
 
-- **Lint**: Code quality checks
+- **Lint**: Code quality checks (if configured)
 - **Build Library**: Compiles the library
-- **Test Library**: Unit tests with ChromeHeadless
 - **Unit Tests**: Node.js unit tests for file generation scripts
 - **Build Demo**: Builds the demo application
 - **E2E Workflow**: Tests the complete i18n extraction/export workflow
 - **E2E Tests**: Playwright tests for multi-locale demo app
 - **Test XML Format**: Complete XML workflow test (switch → extract → fill → export → validate)
 - **E2E XML Tests**: Playwright tests specifically for XML workflow
+- **Test Merged Mode (JSON)**: Tests merge/split workflow with JSON format
+- **Test Merged Mode (XML)**: Tests merge/split workflow with XML format
 - **Matrix Build**: Tests on Ubuntu, Windows, and macOS with Node 22.x
 - **Code Quality**: TypeScript compilation and formatting checks
 
 ### Release Workflow (`.github/workflows/release.yml`)
 
-Triggered on version tags (e.g., `v1.0.0`):
+Triggered on version tags (e.g., `v0.0.2`):
 
-- Runs tests
 - Builds the library
-- Publishes to npm
-- Creates GitHub release
-- Builds and deploys demo app to GitHub Pages
+- Verifies package contents
+- Publishes to npm (requires NPM_TOKEN secret)
+- Creates GitHub release with release notes
 
 ### Publishing a Release
 
 ```bash
-# 1. Update version in package.json
-npm version patch|minor|major
+# 1. Update version in both package.json files
+# Root package.json
+# projects/ngx-i18n-tools/package.json
 
-# 2. Push the tag
-git push origin v1.0.0
+# 2. Rebuild library
+npm run build:lib
 
-# 3. GitHub Actions will automatically publish to npm
+# 3. Commit version change
+git add package.json projects/ngx-i18n-tools/package.json
+git commit -m "Release version X.Y.Z"
+git push origin main
+
+# 4. Create and push tag
+git tag vX.Y.Z
+git push origin vX.Y.Z
+
+# 5. GitHub Actions will automatically:
+#    - Build and publish to npm
+#    - Create GitHub release
 ```
+
+**Note:** You need to add `NPM_TOKEN` secret to GitHub repository settings for npm publishing to work.
 
 ## License
 
