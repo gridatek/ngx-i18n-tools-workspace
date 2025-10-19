@@ -191,6 +191,9 @@ jobs:
       - name: Build library
         run: npm run build:lib
 
+      - name: Extract translations
+        run: npm run i18n:extract
+
       - name: Fill translations
         run: npm run i18n:fill
 
@@ -275,6 +278,9 @@ jobs:
 
       - name: Build library
         run: npm run build:lib
+
+      - name: Switch to JSON format first
+        run: npm run switch:json
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
