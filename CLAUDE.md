@@ -411,6 +411,7 @@ The CI workflow runs on every push and pull request to the `main` branch:
 - **Test Library**: Runs unit tests with ChromeHeadless
 - **Build Demo**: Builds the demo app to verify integration
 - **E2E Workflow**: Tests the complete i18n extraction/export workflow
+- **E2E Tests**: Runs Playwright tests across all locales (en, es, fr, de)
 - **Matrix Build**: Tests on Ubuntu/Windows/macOS with Node 22.x
 - **Code Quality**: Checks formatting with Prettier and TypeScript compilation
 
