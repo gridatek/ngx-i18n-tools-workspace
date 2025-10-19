@@ -279,7 +279,7 @@ jobs:
       - name: Build library
         run: npm run build:lib
 
-      - name: Switch to JSON format first
+      - name: Ensure JSON format (test will switch to XML internally)
         run: npm run switch:json
 
       - name: Install Playwright browsers
