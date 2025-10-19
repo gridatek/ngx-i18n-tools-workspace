@@ -1,0 +1,21 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../dist/ngx-i18n-tools/src/lib",
+    "rootDir": "..",
+    "module": "commonjs",
+    "target": "es2020",
+    "lib": ["es2020"],
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "resolveJsonModule": true,
+    "types": ["node"]
+  },
+  "include": ["../**/*.ts"],
+  "exclude": ["../**/*.spec.ts", "../../test.ts"]
+}

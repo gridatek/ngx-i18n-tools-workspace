@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Key Philosophy:** Work WITH Angular's i18n system, not against it. This is a build-time tool that wraps Angular's native `extract-i18n` command.
 
+**Repository:** https://github.com/kgridou/ngx-i18n-tools-workspace
+
 ## Workspace Structure
 
 This is an Angular workspace containing:
@@ -60,59 +62,173 @@ This gets converted to Angular-compatible XLIFF files (per language) during expo
 3. **Additional Builders**:
    - `merge-builder.ts` - Convert per-component → merged
    - `split-builder.ts` - Convert merged → per-component
-   - `validate-builder.ts` - Comprehensive validation
-   - `report-builder.ts` - Coverage reports
+   - `validate-builder.ts` - Comprehensive validation and coverage reports
+
+## Build Process
+
+The library requires a multi-step build process due to Angular builders needing to be compiled separately:
+
+1. **Angular Library Build**: `ng build ngx-i18n-tools` - Compiles the library code with ng-packagr
+2. **Builders Compilation**: `tsc -p projects/ngx-i18n-tools/src/lib/builders/tsconfig.json` - Compiles Angular builders
+3. **Schematics Compilation**: `tsc -p projects/schematics/tsconfig.json` - Compiles ng-add schematics
+
+The `npm run build:lib` script runs all three steps automatically. The output is in `dist/ngx-i18n-tools/`.
+
+**Important**: When developing builders, you must rebuild the library (`npm run build:lib`) for changes to take effect in the demo app, as Angular CLI loads builders from the installed package.
+
+## Translation Files in Demo App
+
+**Important Note:** Translation files (`*.i18n.json`) in the demo app are **generated files** and are **not committed to git**.
+
+**Workflow:**
+
+1. Run `npm run i18n:extract` to generate empty translation files from templates
+2. Either:
+   - **Automated (for demo/testing):** Run `npm run i18n:fill` to auto-populate with demo translations
+   - **Manual (for real projects):** Edit the `.i18n.json` files manually
+3. Run `npm run i18n:export` to generate XLIFF files
+4. Run `npm run i18n:validate` to check coverage
+
+**Why not commit them?**
+
+- They are auto-generated from templates
+- The `i18n:fill` script provides demo data
+- In real projects, translators maintain these files
+- Keeps the repository clean and focused on source code
+
+**Gitignore entries:**
+
+```
+projects/demo-app/**/*.i18n.json
+projects/demo-app/**/*.i18n.xml
+**/locale/messages.*.xlf
+```
+
+### Local Testing Setup
+
+To test the library locally with the demo app:
+
+**Option 1: npm link (recommended for development)**
+
+```bash
+cd dist/ngx-i18n-tools
+npm link
+cd ../..
+npm link @gridatek/ngx-i18n-tools
+```
+
+**Option 2: npm pack (for realistic testing)**
+
+```bash
+cd dist/ngx-i18n-tools
+npm pack
+cd ../..
+npm install ./dist/ngx-i18n-tools/gridatek-ngx-i18n-tools-1.0.0.tgz
+```
+
+After linking/installing, the demo app's builders will use the local version of the library.
 
 ## Development Commands
 
 ### Library Development
 
 ```bash
+# Build library once
+npm run build:lib
+
 # Build library in watch mode
+npm run build:lib:watch
+# or
 ng build ngx-i18n-tools --watch
 
 # Run library tests
+npm run test:lib
+# or
 ng test ngx-i18n-tools
 
 # Run linter
+npm run lint:lib
+# or
 ng lint ngx-i18n-tools
 ```
 
 ### Demo App Development
 
 ```bash
+# Serve demo app
+npm run serve:demo
+
+# Build demo app (all locales)
+npm run build:demo
+
+# Build demo app (development, single locale)
+npm run build:demo -- --configuration=development
+```
+
+### i18n Workflow Commands
+
+```bash
 # Extract translations (per-component mode)
+npm run i18n:extract
+# or
 ng run demo-app:extract-i18n
 
-# Extract translations (merged mode)
+# Extract translations (merged mode - requires angular.json config change)
 ng run demo-app:extract-i18n --mode=merged
 
 # Export to XLIFF files
+npm run i18n:export
+# or
 ng run demo-app:i18n-export
 
 # Full sync (extract + export)
 npm run i18n:sync
 
 # Validate translations
+npm run i18n:validate
+# or
 ng run demo-app:i18n-validate
+```
 
-# Coverage report
-ng run demo-app:i18n-report
+### Testing Workflow
 
-# Serve with specific locale
-ng serve --configuration=es
+```bash
+# Unit tests (Node.js built-in test runner)
+npm run test:unit             # Run all unit tests
+npm run test:unit:verbose     # Run with verbose output
 
-# Build all locales
-ng build --localize
+# E2E tests (Playwright)
+npm run test:e2e              # Run all E2E tests headless
+npm run test:e2e:ui           # Run tests in UI mode
+npm run test:e2e:headed       # Run tests in headed mode
+npm run test:e2e:xml          # Run XML workflow E2E tests
+npm run test:e2e:report       # View test report
+
+# Integration tests
+npm run test:workflow         # Full automated workflow (Unix/macOS/Git Bash)
+npm run test:workflow:win     # Full automated workflow (Windows CMD/PowerShell)
+npm run test:quick            # Quick test (build + extract + validate)
+npm run test:xml              # Test complete XML workflow
+npm run test:all              # Run unit + E2E tests
+
+# Utilities
+npm run i18n:fill             # Fill missing translations (auto-generates demo translations)
+npm run i18n:complete         # Complete workflow (extract + fill + export)
+npm run switch:xml            # Switch demo app to XML format
+npm run switch:json           # Switch demo app to JSON format
 ```
 
 ### Mode Switching
 
 ```bash
 # Convert per-component to merged
-ng run demo-app:i18n-merge-all
+npm run i18n:merge
+# or
+ng run demo-app:i18n-merge
 
 # Convert merged to per-component
+npm run i18n:split
+# or
 ng run demo-app:i18n-split
 ```
 
@@ -122,7 +238,11 @@ ng run demo-app:i18n-split
 
 - `projects/ngx-i18n-tools/src/lib/builders/extract-builder.ts` - Core extraction logic, wraps Angular CLI
 - `projects/ngx-i18n-tools/src/lib/builders/export-builder.ts` - XLIFF generation from all-in-one format
-- `projects/ngx-i18n-tools/src/lib/builders/schema.json` - Builder option schemas
+- `projects/ngx-i18n-tools/src/lib/builders/validate-builder.ts` - Validation and coverage reporting
+- `projects/ngx-i18n-tools/src/lib/builders/merge-builder.ts` - Merge per-component → single file
+- `projects/ngx-i18n-tools/src/lib/builders/split-builder.ts` - Split single file → per-component
+- `projects/ngx-i18n-tools/src/lib/builders/*-schema.json` - Builder option schemas (one per builder)
+- `projects/ngx-i18n-tools/builders.json` - Builder registry for Angular CLI
 
 ### Converters
 
@@ -141,6 +261,17 @@ ng run demo-app:i18n-split
 ### Types
 
 - `projects/ngx-i18n-tools/src/lib/types/index.ts` - TypeScript interfaces for all data structures
+
+### Scripts
+
+- `scripts/fill-translations.js` - Auto-fills missing translations in demo app with predefined demo translations
+- `scripts/test-workflow.sh` - Full automated workflow test (Unix/macOS/Git Bash)
+- `scripts/test-workflow.bat` - Full automated workflow test (Windows)
+
+### E2E Tests
+
+- `e2e/demo-app.spec.ts` - Playwright tests for demo app covering all locales
+- `playwright.config.ts` - Playwright configuration with multi-locale test projects
 
 ## Important Technical Details
 
@@ -180,7 +311,93 @@ When generating XLIFF:
 
 ## Testing Strategy
 
-### Unit Tests Required
+The project has comprehensive test coverage across multiple layers:
+
+### Unit Tests (Node.js Built-in Test Runner)
+
+Located in `tests/` directory, using Node.js built-in test runner (no external dependencies):
+
+**Files:**
+
+- `tests/fill-translations.test.js` - Tests JSON/XML translation filling
+- `tests/switch-format.test.js` - Tests format switching scripts
+
+**Coverage:**
+
+- ✅ JSON parsing and generation
+- ✅ XML parsing and generation
+- ✅ XML entity escaping
+- ✅ Configuration updates
+- ✅ Translation preservation
+- ✅ Mixed format handling
+- ✅ Round-trip conversions
+
+**Running:**
+
+```bash
+npm run test:unit           # Run all unit tests (TAP format)
+npm run test:unit:verbose   # Run with spec reporter
+```
+
+**Statistics:** 12 tests across 8 suites, ~850ms execution time
+
+See `tests/README.md` for detailed documentation.
+
+### E2E Tests (Playwright)
+
+Located in `e2e/` directory, testing browser interactions:
+
+**Files:**
+
+- `e2e/demo-app.spec.ts` - Multi-locale demo app tests
+- `e2e/xml-workflow.spec.ts` - XML workflow E2E tests
+
+**Coverage:**
+
+- ✅ Navigation between pages in all locales
+- ✅ Translation display correctness (en, es, fr, de)
+- ✅ Interpolation functionality
+- ✅ Accessibility checks
+- ✅ Complete XML workflow (switch → extract → fill → export → validate → build)
+- ✅ XML special character handling
+- ✅ Translation preservation across re-extraction
+- ✅ JSON vs XML output equivalence
+
+**Running:**
+
+```bash
+# Install Playwright browsers (first time only)
+npx playwright install
+
+# Run tests
+npm run test:e2e            # Run all E2E tests (multi-locale)
+npm run test:e2e:xml        # Run XML workflow E2E tests
+npm run test:e2e:ui         # Run with UI for debugging
+npm run test:e2e:headed     # Run in headed mode (see browser)
+npm run test:e2e:report     # View test report
+```
+
+**Configuration:**
+
+- Tests run against 4 locale configurations (en-US, es-ES, fr-FR, de-DE)
+- Automatically starts dev server (`npm run serve:demo`)
+- Generates HTML reports in `playwright-report/`
+- See `e2e/README.md` for detailed documentation
+
+### Integration Tests (Script-Based)
+
+**Workflow Tests:**
+
+```bash
+npm run test:workflow       # Full automated test (Unix/macOS/Git Bash)
+npm run test:workflow:win   # Full automated test (Windows)
+npm run test:quick          # Build + extract + validate
+npm run test:xml            # Complete XML workflow
+```
+
+### Angular Library Unit Tests Required
+
+For the Angular library code (builders, converters, etc.):
 
 - **Parsers**: XLIFF 1.2/2.0 parsing, JSON/XML translation files, interpolation extraction
 - **Converters**: XLIFF ↔ JSON, preserve placeholders/plurals/ICU syntax
@@ -188,15 +405,24 @@ When generating XLIFF:
 - **Mergers**: File merging, preserve existing, handle conflicts
 - **Builders**: Extract/export flows, mode switching
 
-### Integration Tests Required
+### Test Execution Order
 
-- Full extraction flow: templates → translation files → re-extraction preserves data
-- Full export flow: translation files → XLIFF → Angular build succeeds
-- Mode switching: per-component ↔ merged without data loss
+1. **Unit tests first** (fastest, ~1s) - `npm run test:unit`
+2. **Integration tests** (medium, ~30s) - `npm run test:xml`
+3. **E2E tests** (slowest, ~2-5min) - `npm run test:e2e`
 
-### Demo App Tests Required
+**Run all:** `npm run test:all`
 
-- All i18n markers have translations
+### CI Test Jobs
+
+All tests run automatically in GitHub Actions CI:
+
+- **unit-tests**: Node.js unit tests for scripts
+- **e2e-tests**: Playwright multi-locale browser tests
+- **test-xml-format**: Complete XML workflow integration test
+- **e2e-xml-tests**: Playwright XML workflow E2E tests
+- **test-library**: Angular library unit tests (Karma/Jasmine)
+- **matrix-build**: Cross-platform builds (Ubuntu, Windows, macOS)
 - All locales build successfully
 - Interpolations and plurals work correctly
 - Add component → extract → translate → build workflow
@@ -235,7 +461,7 @@ Typical `angular.json` configuration for a project using the library:
 ## Technical Constraints
 
 - **Minimum Angular Version:** 17.0.0
-- **Node Version:** >=18.0.0
+- **Node Version:** >=22.0.0
 - **TypeScript Version:** >=5.0.0
 - **Output Formats:** Must be 100% compatible with Angular's compiler
 - **XLIFF Versions:** Support both 1.2 and 2.0
@@ -259,12 +485,123 @@ The `ng add @gridatek/ngx-i18n-tools` schematic should:
 3. Add npm scripts to `package.json` for i18n commands
 4. Display next steps to user
 
+## CI/CD Workflows
+
+### Continuous Integration (`.github/workflows/ci.yml`)
+
+The CI workflow runs on every push and pull request to the `main` branch:
+
+**Jobs:**
+
+- **Lint**: Runs `npm run lint:lib` to check code quality
+- **Build Library**: Compiles the library and uploads artifacts
+- **Test Library**: Runs unit tests with ChromeHeadless
+- **Build Demo**: Builds the demo app to verify integration
+- **E2E Workflow**: Tests the complete i18n extraction/export workflow
+- **E2E Tests**: Runs Playwright tests across all locales (en, es, fr, de)
+- **Test XML Format**: Tests complete workflow with XML translation files
+- **Matrix Build**: Tests on Ubuntu/Windows/macOS with Node 22.x
+- **Code Quality**: Checks formatting with Prettier and TypeScript compilation
+
+### Release Workflow (`.github/workflows/release.yml`)
+
+Triggered when pushing a version tag (e.g., `v1.0.0`):
+
+**Jobs:**
+
+1. **Build and Publish**: Runs tests, builds library, publishes to npm, creates GitHub release
+2. **Build Demo**: Builds and deploys demo app to GitHub Pages
+
+**To trigger a release:**
+
+```bash
+# Update version in package.json files
+npm version patch|minor|major
+
+# Push the tag
+git push origin v1.0.0
+```
+
+### Code Quality Standards
+
+Before committing, ensure:
+
+- Code passes Prettier formatting: `npx prettier --check "**/*.{ts,html,css,json,md}"`
+- TypeScript compiles without errors: `npx tsc --noEmit`
+- All linter rules pass: `npm run lint:lib`
+- All tests pass: `npm run test:lib -- --watch=false --browsers=ChromeHeadless`
+
+The project uses Husky and lint-staged to automatically format code on commit.
+
 ## Publishing Checklist
 
-- All unit and integration tests passing
-- Demo app builds successfully for all locales
-- README.md complete with examples
-- CHANGELOG.md updated
-- Schematics tested with `ng add`
-- Build library: `ng build ngx-i18n-tools --configuration=production`
-- Publish from `dist/ngx-i18n-tools/`
+Before publishing a new version:
+
+- [ ] All unit and integration tests passing
+- [ ] Demo app builds successfully for all locales
+- [ ] Full workflow test passes: `npm run test:workflow` (Unix) or `npm run test:workflow:win` (Windows)
+- [ ] README.md complete with examples
+- [ ] CHANGELOG.md updated with version changes
+- [ ] Schematics tested with `ng add` in a fresh Angular project
+- [ ] Code formatted and quality checks pass
+- [ ] Version number updated in `package.json` files
+- [ ] Build library: `npm run build:lib`
+- [ ] Test package contents: `cd dist/ngx-i18n-tools && npm pack --dry-run`
+- [ ] Push version tag to trigger release workflow
+
+## Platform-Specific Notes
+
+### Windows Development
+
+- Use `npm run test:workflow:win` instead of `npm run test:workflow` (uses .bat script)
+- Git Bash users can use the Unix scripts (`npm run test:workflow`)
+- File paths in builders use Node's `path` module for cross-platform compatibility
+- Glob patterns work the same on Windows and Unix
+
+### Testing on Multiple Platforms
+
+The CI/CD pipeline tests on Ubuntu, Windows, and macOS with Node 22.x. When making changes that involve:
+
+- File path manipulation
+- Shell command execution
+- Glob pattern matching
+
+Test on both Unix and Windows platforms to ensure compatibility.
+
+## Troubleshooting
+
+### Builder Not Found Error
+
+If you see `Could not find builder "@gridatek/ngx-i18n-tools:extract"`:
+
+1. Ensure the library is built: `npm run build:lib`
+2. Check `dist/ngx-i18n-tools/builders.json` exists
+3. Verify the package is linked/installed: `ls node_modules/@gridatek/ngx-i18n-tools`
+4. Try unlinking and relinking: `npm unlink @gridatek/ngx-i18n-tools && cd dist/ngx-i18n-tools && npm link && cd ../.. && npm link @gridatek/ngx-i18n-tools`
+
+### Translation Files Not Created
+
+If extraction runs but no `.i18n.json` files appear:
+
+1. Check that templates have `i18n` attributes (e.g., `<h1 i18n="@@welcome">Welcome</h1>`)
+2. Verify `templatePattern` in `angular.json` matches your template locations
+3. Check Angular's temp XLIFF output was generated (should be created and cleaned up)
+4. Look for error messages in the extraction output
+
+### Changes to Builders Not Taking Effect
+
+If you modify a builder but the demo app still uses the old version:
+
+1. Rebuild the library: `npm run build:lib`
+2. The `npm link` should automatically pick up changes
+3. If using `npm pack`, reinstall: `npm install ./dist/ngx-i18n-tools/gridatek-ngx-i18n-tools-1.0.0.tgz`
+4. Clear any caching: delete `dist/demo-app` and rebuild
+
+### XLIFF Files Invalid
+
+If Angular's build fails with XLIFF errors:
+
+1. Check the generated `.xlf` files are valid XML
+2. Ensure interpolation placeholders are preserved correctly
+3. Verify ICU syntax for plurals is maintained
+4. Compare against Angular's expected XLIFF format (run `ng extract-i18n` manually to see expected output)

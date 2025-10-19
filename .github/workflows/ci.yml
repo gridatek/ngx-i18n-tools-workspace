@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 jobs:
   lint:
@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -66,7 +66,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -88,7 +88,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -119,7 +119,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -127,6 +127,13 @@ jobs:
 
       - name: Build library
         run: npm run build:lib
+
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
 
       - name: Extract i18n
         run: npm run i18n:extract
@@ -145,21 +152,20 @@ jobs:
         continue-on-error: true
 
   matrix-build:
-    name: Build on Multiple Node Versions
+    name: Build on Multiple Platforms
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: ['18.x', '20.x']
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -170,6 +176,174 @@ jobs:
 
       - name: Build demo app
         run: npm run build:demo -- --configuration=development
+
+  e2e-tests:
+    name: E2E Tests with Playwright
+    runs-on: ubuntu-latest
+    needs: build-library
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build library
+        run: npm run build:lib
+
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
+
+      - name: Extract translations
+        run: npm run i18n:extract
+
+      - name: Fill translations
+        run: npm run i18n:fill
+
+      - name: Export translations
+        run: npm run i18n:export
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  unit-tests:
+    name: Unit Tests for Scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit:verbose
+
+  test-xml-format:
+    name: Test XML Translation Format
+    runs-on: ubuntu-latest
+    needs: build-library
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build library
+        run: npm run build:lib
+
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
+
+      - name: Test XML format workflow
+        run: npm run test:xml
+
+  e2e-xml-tests:
+    name: E2E Tests for XML Workflow
+    runs-on: ubuntu-latest
+    needs: build-library
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build library
+        run: npm run build:lib
+
+      - name: Link library for demo app
+        run: |
+          cd dist/ngx-i18n-tools
+          npm link
+          cd ../..
+          npm link @gridatek/ngx-i18n-tools
+
+      - name: Clean up existing translation files
+        run: |
+          rm -f projects/demo-app/src/**/*.i18n.json
+          rm -f projects/demo-app/src/**/*.i18n.xml
+
+      - name: Switch to XML format
+        run: npm run switch:xml
+
+      - name: Extract translations (XML format)
+        run: npm run i18n:extract
+
+      - name: Fill translations
+        run: npm run i18n:fill
+
+      - name: Export to XLIFF
+        run: npm run i18n:export
+
+      - name: Validate translations
+        run: npm run i18n:validate
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run XML workflow E2E tests
+        run: npm run test:e2e:xml
+
+      - name: Switch back to JSON format
+        run: npm run switch:json
+        if: always()
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-xml
+          path: playwright-report/
+          retention-days: 30
 
   code-quality:
     name: Code Quality Checks
@@ -182,7 +356,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies

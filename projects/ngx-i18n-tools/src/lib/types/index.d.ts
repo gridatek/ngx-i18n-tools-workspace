@@ -1,16 +1,12 @@
-import { JsonObject } from '@angular-devkit/core';
-
 /**
  * Translation source format (all-in-one)
  * Key -> Language Code -> Translation
- * Note: Source locale is included as one of the language codes
  */
 export interface TranslationSource {
   [key: string]: {
     [languageCode: string]: string;
   };
 }
-
 /**
  * Parsed translation entry from XLIFF
  */
@@ -23,7 +19,6 @@ export interface TranslationEntry {
   description?: string;
   meaning?: string;
 }
-
 /**
  * Translation file metadata
  */
@@ -32,7 +27,6 @@ export interface TranslationFile {
   format: 'json' | 'xml';
   entries: Map<string, TranslationSource[string]>;
 }
-
 /**
  * Validation result
  */
@@ -41,7 +35,6 @@ export interface ValidationResult {
   errors: ValidationError[];
   warnings: ValidationWarning[];
 }
-
 export interface ValidationError {
   type:
     | 'duplicate_key'
@@ -54,14 +47,12 @@ export interface ValidationError {
   file: string;
   line?: number;
 }
-
 export interface ValidationWarning {
   type: 'incomplete_translation' | 'unused_key' | 'inconsistent_interpolation';
   key: string;
   message: string;
   file: string;
 }
-
 /**
  * Extract builder options
  */
@@ -78,7 +69,6 @@ export interface ExtractOptions {
   validateInterpolations: boolean;
   sortKeys?: boolean;
 }
-
 /**
  * Export builder options
  */
@@ -90,7 +80,6 @@ export interface ExportOptions {
   sourceLocale: string;
   targetLocales: string[];
 }
-
 /**
  * Merge result
  */
@@ -100,7 +89,6 @@ export interface MergeResult {
   removed: string[];
   preserved: string[];
 }
-
 /**
  * XLIFF unit for generation
  */
@@ -111,19 +99,16 @@ export interface XliffUnit {
   sourceFile?: string;
   note?: string;
 }
-
 export interface XliffFile {
   version: '1.2' | '2.0';
   sourceLanguage: string;
   targetLanguage?: string;
   units: XliffUnit[];
 }
-
 /**
  * Translation map for internal use
  */
 export type TranslationMap = Map<string, TranslationSource[string]>;
-
 /**
  * Component to translations mapping
  */

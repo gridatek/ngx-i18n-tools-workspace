@@ -4,7 +4,11 @@ import * as path from 'path';
 import { ExtractOptions, TranslationSource } from '../types';
 import { runAngularExtractI18n } from '../utils/angular-wrapper';
 import { xliffToJson } from '../converters/xliff-to-json.converter';
-import { findTemplates, groupTemplatesByComponent } from '../utils/template-scanner';
+import {
+  findTemplates,
+  groupTemplatesByComponent,
+  getTemplateEntries,
+} from '../utils/template-scanner';
 import { mergeTranslations } from '../utils/file-merger';
 import { parseTranslationXml, buildTranslationXml } from '../converters/xml-parser';
 
@@ -14,38 +18,18 @@ import { parseTranslationXml, buildTranslationXml } from '../converters/xml-pars
 export default createBuilder<ExtractOptions>(
   async (options: ExtractOptions, context: BuilderContext): Promise<BuilderOutput> => {
     try {
-      context.logger.info(`🔍 Extracting in ${options.mode} mode...`);
+      context.logger.info(`🔍 Extracting i18n in ${options.mode} mode...`);
+      context.logger.info(`📁 Workspace: ${context.workspaceRoot}`);
+      context.logger.info(`📝 Pattern: ${options.templatePattern}`);
 
-      // Step 1: Create temp directory for Angular output
-      const tempDir = path.join(context.workspaceRoot, '.temp-i18n');
-      await fs.promises.mkdir(tempDir, { recursive: true });
-
-      const tempXliffPath = path.join(tempDir, 'messages.xlf');
-
-      // Step 2: Run Angular's native extract-i18n
-      context.logger.info('Running Angular extract-i18n...');
-      const angularResult = await runAngularExtractI18n(context, tempDir, 'xliff2');
-
-      if (!angularResult.success) {
-        return {
-          success: false,
-          error: `Angular extraction failed: ${angularResult.error}`,
-        };
-      }
-
-      context.logger.info('✓ Template extraction complete');
-
-      // Step 3: Convert based on mode
+      // Step 1: Convert based on mode
       let result: BuilderOutput;
 
       if (options.mode === 'per-component') {
-        result = await extractPerComponent(options, context, tempXliffPath);
+        result = await extractPerComponent(options, context);
       } else {
-        result = await extractMerged(options, context, tempXliffPath);
+        result = await extractMerged(options, context);
       }
-
-      // Step 4: Clean up temp files
-      await fs.promises.rm(tempDir, { recursive: true, force: true });
 
       return result;
     } catch (error: any) {
@@ -61,7 +45,6 @@ export default createBuilder<ExtractOptions>(
 async function extractPerComponent(
   options: ExtractOptions,
   context: BuilderContext,
-  xliffPath: string,
 ): Promise<BuilderOutput> {
   // Find all component templates
   const templates = await findTemplates(options.templatePattern, context.workspaceRoot);
@@ -71,26 +54,38 @@ async function extractPerComponent(
     return { success: true };
   }
 
+  context.logger.info(`✓ Found ${templates.length} template(s)`);
+
   // Group templates by component
   const components = await groupTemplatesByComponent(
     templates,
     options.translationFileNaming || '{component}.i18n.json',
   );
 
-  // Read extracted XLIFF
-  const xliffContent = await fs.promises.readFile(xliffPath, 'utf-8');
-
-  // Convert XLIFF to all-in-one format
-  const extracted = xliffToJson(xliffContent, options.sourceLocale, options.targetLocales);
-
   let totalKeys = 0;
   let filesProcessed = 0;
 
   // For each component, create/update translation file
   for (const component of components) {
-    // Filter keys that belong to this template
-    // For simplicity, we'll distribute all keys to each component
-    // In a real implementation, you'd map keys to templates
+    // Extract i18n entries from this template
+    const entries = await getTemplateEntries(component.templatePath);
+
+    // Convert entries to TranslationSource format
+    const extracted: TranslationSource = {};
+    for (const entry of entries) {
+      const translations: Record<string, string> = {};
+
+      // Set source locale text
+      translations[options.sourceLocale] = entry.text;
+
+      // Initialize empty translations for target locales
+      for (const locale of options.targetLocales) {
+        translations[locale] = '';
+      }
+
+      extracted[entry.key] = translations;
+    }
+
     const componentTranslations: TranslationSource = extracted;
 
     // Load existing translations if present
@@ -147,14 +142,6 @@ async function extractPerComponent(
     `\n📊 Total: ${totalKeys} keys extracted across ${filesProcessed} components`,
   );
 
-  // Calculate missing translations
-  const missingByLocale = calculateMissing(extracted, options.targetLocales);
-  for (const [locale, count] of missingByLocale.entries()) {
-    if (count > 0) {
-      context.logger.warn(`⚠️  Missing translations for ${locale}: ${count}`);
-    }
-  }
-
   return { success: true };
 }
 
@@ -164,7 +151,6 @@ async function extractPerComponent(
 async function extractMerged(
   options: ExtractOptions,
   context: BuilderContext,
-  xliffPath: string,
 ): Promise<BuilderOutput> {
   if (!options.outputFile) {
     return { success: false, error: 'outputFile is required for merged mode' };
@@ -172,11 +158,37 @@ async function extractMerged(
 
   const outputPath = path.join(context.workspaceRoot, options.outputFile);
 
-  // Read extracted XLIFF
-  const xliffContent = await fs.promises.readFile(xliffPath, 'utf-8');
+  // Find all templates
+  const templates = await findTemplates(options.templatePattern, context.workspaceRoot);
 
-  // Convert XLIFF to all-in-one format
-  const extracted = xliffToJson(xliffContent, options.sourceLocale, options.targetLocales);
+  if (templates.length === 0) {
+    context.logger.warn(`No templates found matching pattern: ${options.templatePattern}`);
+    return { success: true };
+  }
+
+  context.logger.info(`✓ Found ${templates.length} template(s)`);
+
+  // Extract i18n entries from all templates
+  const extracted: TranslationSource = {};
+  for (const templatePath of templates) {
+    const entries = await getTemplateEntries(templatePath);
+
+    for (const entry of entries) {
+      if (!extracted[entry.key]) {
+        const translations: Record<string, string> = {};
+
+        // Set source locale text
+        translations[options.sourceLocale] = entry.text;
+
+        // Initialize empty translations for target locales
+        for (const locale of options.targetLocales) {
+          translations[locale] = '';
+        }
+
+        extracted[entry.key] = translations;
+      }
+    }
+  }
 
   // Load existing translations if present
   let existingTranslations: TranslationSource = {};

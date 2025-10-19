@@ -112,3 +112,68 @@ export async function mapKeysToSourceFiles(templates: string[]): Promise<Map<str
 
   return keyToFile;
 }
+
+/**
+ * Extract i18n entries with text content from template
+ */
+export interface I18nEntry {
+  key: string;
+  text: string;
+  type: 'element' | 'attribute';
+  attribute?: string;
+}
+
+export function extractI18nEntriesFromTemplate(templateContent: string): I18nEntry[] {
+  const entries: I18nEntry[] = [];
+
+  // Match element i18n: <tag i18n="@@key">Text</tag>
+  const elementPattern = /<([a-zA-Z][\w-]*)[^>]*\si18n="[^"]*@@([^"@\|]+)[^"]*"[^>]*>(.*?)<\/\1>/gs;
+  let match;
+
+  while ((match = elementPattern.exec(templateContent)) !== null) {
+    const key = match[2].trim();
+    let text = match[3].trim();
+
+    // Remove nested tags and clean up
+    text = text
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (text && key) {
+      entries.push({
+        key,
+        text,
+        type: 'element',
+      });
+    }
+  }
+
+  // Match attribute i18n: <tag i18n-placeholder="@@key" placeholder="Text">
+  const attrPattern = /<[^>]+i18n-(\w+)="[^"]*@@([^"@\|]+)[^"]*"[^>]*\s\1="([^"]+)"[^>]*>/g;
+
+  while ((match = attrPattern.exec(templateContent)) !== null) {
+    const attribute = match[1];
+    const key = match[2].trim();
+    const text = match[3].trim();
+
+    if (text && key) {
+      entries.push({
+        key,
+        text,
+        type: 'attribute',
+        attribute,
+      });
+    }
+  }
+
+  return entries;
+}
+
+/**
+ * Read template file and extract entries with text
+ */
+export async function getTemplateEntries(templatePath: string): Promise<I18nEntry[]> {
+  const content = await fs.promises.readFile(templatePath, 'utf-8');
+  return extractI18nEntriesFromTemplate(content);
+}
