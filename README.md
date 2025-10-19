@@ -165,7 +165,6 @@ npm run test:all            # Run unit tests + E2E tests
 ## Requirements
 
 - Angular >= 15.0.0
-- Node.js >= 18.13.0 (LTS)
 
 ## Documentation
 

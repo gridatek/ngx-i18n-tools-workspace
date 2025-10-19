@@ -364,8 +364,7 @@ ng run app:extract-i18n
 
 ## Requirements
 
-- Angular >= 15.0.0 (supports Angular 15, 16, 17, 18+)
-- Node.js >= 18.13.0 (LTS)
+- Angular >= 15.0.0
 
 ## FAQ
 
