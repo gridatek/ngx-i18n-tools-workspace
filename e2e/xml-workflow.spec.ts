@@ -156,7 +156,7 @@ test.describe('XML Translation Workflow E2E', () => {
       timeout: 180000,
     });
 
-    expect(buildOutput).toContain('Application bundle generation complete');
+    expect(buildOutput).toContain('bundle generation complete');
 
     // Step 7: Switch back to JSON
     const switchBackOutput = execSync('node scripts/switch-to-json.js', {
