@@ -46,3 +46,9 @@ Thumbs.db
 
 # XLIFF files (generated, don't commit)
 **/locale/messages.*.xlf
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

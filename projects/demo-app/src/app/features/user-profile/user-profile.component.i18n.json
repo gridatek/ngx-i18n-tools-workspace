@@ -1,38 +1,38 @@
 {
   "profile.edit": {
     "en": "Edit Profile",
-    "es": "",
-    "fr": "",
-    "de": ""
+    "es": "Editar Perfil",
+    "fr": "Modifier le Profil",
+    "de": "Profil Bearbeiten"
   },
   "profile.email.label": {
     "en": "Email:",
-    "es": "",
-    "fr": "",
-    "de": ""
+    "es": "Correo:",
+    "fr": "E-mail:",
+    "de": "E-Mail:"
   },
   "profile.name.label": {
     "en": "Name:",
-    "es": "",
-    "fr": "",
-    "de": ""
+    "es": "Nombre:",
+    "fr": "Nom:",
+    "de": "Name:"
   },
   "profile.search.title": {
     "en": "Search your profile",
-    "es": "",
-    "fr": "",
-    "de": ""
+    "es": "Buscar en tu perfil",
+    "fr": "Rechercher dans votre profil",
+    "de": "In Ihrem Profil suchen"
   },
   "profile.settings": {
     "en": "Settings",
-    "es": "",
-    "fr": "",
-    "de": ""
+    "es": "Configuración",
+    "fr": "Paramètres",
+    "de": "Einstellungen"
   },
   "profile.title": {
     "en": "User Profile",
-    "es": "",
-    "fr": "",
-    "de": ""
+    "es": "Perfil de Usuario",
+    "fr": "Profil Utilisateur",
+    "de": "Benutzerprofil"
   }
 }

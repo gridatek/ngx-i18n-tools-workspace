@@ -173,6 +173,18 @@ npm run test:workflow:win
 
 # Quick test (build + extract + validate)
 npm run test:quick
+
+# Fill missing translations in demo app (auto-generates demo translations)
+npm run i18n:fill
+
+# Complete workflow (extract + fill + export)
+npm run i18n:complete
+
+# E2E tests with Playwright
+npm run test:e2e              # Run all tests headless
+npm run test:e2e:ui           # Run tests in UI mode
+npm run test:e2e:headed       # Run tests in headed mode
+npm run test:e2e:report       # View test report
 ```
 
 ### Mode Switching
@@ -218,6 +230,17 @@ ng run demo-app:i18n-split
 ### Types
 
 - `projects/ngx-i18n-tools/src/lib/types/index.ts` - TypeScript interfaces for all data structures
+
+### Scripts
+
+- `scripts/fill-translations.js` - Auto-fills missing translations in demo app with predefined demo translations
+- `scripts/test-workflow.sh` - Full automated workflow test (Unix/macOS/Git Bash)
+- `scripts/test-workflow.bat` - Full automated workflow test (Windows)
+
+### E2E Tests
+
+- `e2e/demo-app.spec.ts` - Playwright tests for demo app covering all locales
+- `playwright.config.ts` - Playwright configuration with multi-locale test projects
 
 ## Important Technical Details
 
@@ -270,6 +293,45 @@ When generating XLIFF:
 - Full extraction flow: templates → translation files → re-extraction preserves data
 - Full export flow: translation files → XLIFF → Angular build succeeds
 - Mode switching: per-component ↔ merged without data loss
+
+### E2E Tests (Playwright)
+
+The project includes comprehensive E2E tests using Playwright to verify the demo app works correctly:
+
+**Test Coverage:**
+
+- Navigation between pages in all locales
+- Translation display correctness (en, es, fr, de)
+- Interpolation functionality (e.g., `Hello {{ userName }}`)
+- Pluralization functionality (ICU message format)
+- Accessibility (navigation, headings, form labels)
+- Translation persistence after page reload
+
+**Running E2E Tests:**
+
+```bash
+# Install Playwright browsers (first time only)
+npx playwright install
+
+# Run all tests
+npm run test:e2e
+
+# Run tests with UI for debugging
+npm run test:e2e:ui
+
+# Run tests in headed mode (see browser)
+npm run test:e2e:headed
+
+# View test report
+npm run test:e2e:report
+```
+
+**Configuration:**
+
+- Tests run against 4 locale configurations (en-US, es-ES, fr-FR, de-DE)
+- Automatically starts dev server (`npm run serve:demo`)
+- Generates HTML reports in `playwright-report/`
+- See `e2e/README.md` for detailed documentation
 
 ### Demo App Tests Required
 

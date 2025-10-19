@@ -79,8 +79,10 @@ npm run build:demo         # Build demo app
 
 ```bash
 npm run i18n:extract       # Extract translations
+npm run i18n:fill          # Auto-fill missing demo translations
 npm run i18n:export        # Export to XLIFF
 npm run i18n:sync          # Extract + Export
+npm run i18n:complete      # Extract + Fill + Export
 npm run i18n:validate      # Validate translations
 npm run i18n:merge         # Convert per-component → merged
 npm run i18n:split         # Convert merged → per-component
@@ -97,6 +99,23 @@ npm run test:quick          # Quick test (build + extract + validate)
 ```
 
 The automated workflow tests all builders, validates outputs, and builds the demo app. See [TESTING.md](./TESTING.md) for detailed testing instructions.
+
+### E2E Testing
+
+Run end-to-end tests with Playwright:
+
+```bash
+# Install Playwright browsers (first time only)
+npx playwright install
+
+# Run E2E tests
+npm run test:e2e            # Run all tests headless
+npm run test:e2e:ui         # Run tests in UI mode
+npm run test:e2e:headed     # Run tests in headed mode
+npm run test:e2e:report     # View test report
+```
+
+See [e2e/README.md](./e2e/README.md) for detailed E2E testing documentation.
 
 ## Features
 

@@ -17,9 +17,15 @@
     "i18n:validate": "ng run demo-app:i18n-validate",
     "i18n:merge": "ng run demo-app:i18n-merge",
     "i18n:split": "ng run demo-app:i18n-split",
+    "i18n:fill": "node scripts/fill-translations.js",
+    "i18n:complete": "npm run i18n:extract && npm run i18n:fill && npm run i18n:export",
     "test:workflow": "bash scripts/test-workflow.sh",
     "test:workflow:win": "scripts\\test-workflow.bat",
     "test:quick": "npm run build:lib && npm run i18n:extract && npm run i18n:validate",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -46,6 +52,7 @@
     "@angular-devkit/schematics": "^17.0.0",
     "@angular/cli": "^17.0.0",
     "@angular/compiler-cli": "^17.0.0",
+    "@playwright/test": "^1.56.1",
     "@schematics/angular": "^17.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.0.0",
