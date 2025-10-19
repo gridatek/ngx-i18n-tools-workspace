@@ -162,6 +162,12 @@ npm run test:all            # Run unit tests + E2E tests
 - **Comprehensive validation**: Catch errors early
 - **Automatic merging**: Re-extraction preserves existing translations
 
+## Requirements
+
+- Angular >= 15.0.0
+- Node.js >= 18.13.0 (LTS)
+- TypeScript >= 4.9.0
+
 ## Documentation
 
 See [ngx-i18n-tools-doc.md](./ngx-i18n-tools-doc.md) for complete documentation.
