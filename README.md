@@ -1,6 +1,6 @@
 # ngx-i18n-tools Workspace
 
-[![CI](https://github.com/gridatek/ngx-i18n-tools/workflows/CI/badge.svg)](https://github.com/gridatek/ngx-i18n-tools/actions/workflows/ci.yml)
+[![CI](https://github.com/gridatek/https://github.com/gridatek/ngx-i18n-tools-workspace/actions/workflows/ci.yml/workflows/CI/badge.svg)](https://github.com/gridatek/ngx-i18n-tools-workspace/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/%40gridatek%2Fngx-i18n-tools.svg)](https://www.npmjs.com/package/@gridatek/ngx-i18n-tools)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -189,38 +189,25 @@ Runs on every push and pull request:
 
 ### Release Workflow (`.github/workflows/release.yml`)
 
-Triggered on version tags (e.g., `v0.0.2`):
+Triggered on version tags (e.g., `v1.0.0`):
 
+- Runs tests
 - Builds the library
-- Verifies package contents
-- Publishes to npm (requires NPM_TOKEN secret)
-- Creates GitHub release with release notes
+- Publishes to npm
+- Creates GitHub release
+- Builds and deploys demo app to GitHub Pages
 
 ### Publishing a Release
 
 ```bash
-# 1. Update version in both package.json files
-# Root package.json
-# projects/ngx-i18n-tools/package.json
+# 1. Update version in package.json
+npm version patch|minor|major
 
-# 2. Rebuild library
-npm run build:lib
+# 2. Push the tag
+git push origin v1.0.0
 
-# 3. Commit version change
-git add package.json projects/ngx-i18n-tools/package.json
-git commit -m "Release version X.Y.Z"
-git push origin main
-
-# 4. Create and push tag
-git tag vX.Y.Z
-git push origin vX.Y.Z
-
-# 5. GitHub Actions will automatically:
-#    - Build and publish to npm
-#    - Create GitHub release
+# 3. GitHub Actions will automatically publish to npm
 ```
-
-**Note:** You need to add `NPM_TOKEN` secret to GitHub repository settings for npm publishing to work.
 
 ## License
 
