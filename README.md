@@ -1,6 +1,6 @@
 # ngx-i18n-tools Workspace
 
-[![CI](https://github.com/gridatek/ngx-i18n-tools-workspace/actions/workflows/ci.yml/workflows/CI/badge.svg)](https://github.com/gridatek/ngx-i18n-tools-workspace/actions/workflows/ci.yml)
+[![CI](https://github.com/gridatek/ngx-i18n-tools-workspace/workflows/CI/badge.svg)](https://github.com/gridatek/ngx-i18n-tools-workspace/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/%40gridatek%2Fngx-i18n-tools.svg)](https://www.npmjs.com/package/@gridatek/ngx-i18n-tools)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
