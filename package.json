@@ -22,10 +22,17 @@
     "test:workflow": "bash scripts/test-workflow.sh",
     "test:workflow:win": "scripts\\test-workflow.bat",
     "test:quick": "npm run build:lib && npm run i18n:extract && npm run i18n:validate",
+    "test:unit": "node --test tests/**/*.test.js",
+    "test:unit:verbose": "node --test --test-reporter=spec tests/**/*.test.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
+    "test:e2e:xml": "playwright test e2e/xml-workflow.spec.ts",
+    "test:xml": "node scripts/test-xml-workflow.js",
+    "test:all": "npm run test:unit && npm run test:e2e",
+    "switch:xml": "node scripts/switch-to-xml.js",
+    "switch:json": "node scripts/switch-to-json.js",
     "prepare": "husky"
   },
   "lint-staged": {

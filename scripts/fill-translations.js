@@ -76,23 +76,87 @@ const translations = {
   },
 };
 
+/**
+ * Parse XML format: <translations><translation key="..."><en>...</en><es/><fr/><de/></translation></translations>
+ */
+function parseXml(xmlContent) {
+  const data = {};
+  const translationRegex = /<translation\s+key="([^"]+)">([\s\S]*?)<\/translation>/g;
+
+  let match;
+  while ((match = translationRegex.exec(xmlContent)) !== null) {
+    const key = match[1];
+    const content = match[2];
+
+    data[key] = {};
+
+    // Extract each locale
+    for (const locale of ['en', 'es', 'fr', 'de']) {
+      const localeMatch = new RegExp(`<${locale}>([^<]*)<\\/${locale}>`).exec(content);
+      data[key][locale] = localeMatch ? localeMatch[1] : '';
+    }
+  }
+
+  return data;
+}
+
+/**
+ * Format data back to XML
+ */
+function formatXml(data) {
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<translations>\n';
+
+  for (const [key, locales] of Object.entries(data)) {
+    xml += `  <translation key="${key}">\n`;
+    xml += `    <en>${escapeXml(locales.en || '')}</en>\n`;
+    xml += `    <es>${escapeXml(locales.es || '')}</es>\n`;
+    xml += `    <fr>${escapeXml(locales.fr || '')}</fr>\n`;
+    xml += `    <de>${escapeXml(locales.de || '')}</de>\n`;
+    xml += '  </translation>\n';
+  }
+
+  xml += '</translations>\n';
+  return xml;
+}
+
+/**
+ * Escape XML special characters
+ */
+function escapeXml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 async function fillTranslations() {
   console.log('🔍 Finding translation files...\n');
 
-  // Find all .i18n.json files in the demo app
-  const pattern = 'projects/demo-app/src/**/*.i18n.json';
-  const files = await glob(pattern, { windowsPathsNoEscape: true });
+  // Find all .i18n.json and .i18n.xml files in the demo app
+  const jsonFiles = await glob('projects/demo-app/src/**/*.i18n.json', {
+    windowsPathsNoEscape: true,
+  });
+  const xmlFiles = await glob('projects/demo-app/src/**/*.i18n.xml', {
+    windowsPathsNoEscape: true,
+  });
+  const files = [...jsonFiles, ...xmlFiles];
 
-  console.log(`Found ${files.length} translation file(s):\n`);
+  console.log(
+    `Found ${files.length} translation file(s) (${jsonFiles.length} JSON, ${xmlFiles.length} XML):\n`,
+  );
 
   let totalUpdated = 0;
 
   for (const file of files) {
     console.log(`📝 Processing: ${file}`);
 
+    const isXml = file.endsWith('.xml');
+
     // Read the file
     const content = fs.readFileSync(file, 'utf8');
-    const data = JSON.parse(content);
+    const data = isXml ? parseXml(content) : JSON.parse(content);
 
     let updated = false;
 
@@ -124,7 +188,8 @@ async function fillTranslations() {
 
     if (updated) {
       // Write back to file with pretty formatting
-      fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n', 'utf8');
+      const output = isXml ? formatXml(data) : JSON.stringify(data, null, 2) + '\n';
+      fs.writeFileSync(file, output, 'utf8');
       console.log(`   ✓ Updated with translations\n`);
       totalUpdated++;
     } else {

@@ -193,26 +193,29 @@ ng run demo-app:i18n-validate
 ### Testing Workflow
 
 ```bash
-# Full automated workflow test (Unix/macOS/Git Bash)
-npm run test:workflow
+# Unit tests (Node.js built-in test runner)
+npm run test:unit             # Run all unit tests
+npm run test:unit:verbose     # Run with verbose output
 
-# Full automated workflow test (Windows CMD/PowerShell)
-npm run test:workflow:win
-
-# Quick test (build + extract + validate)
-npm run test:quick
-
-# Fill missing translations in demo app (auto-generates demo translations)
-npm run i18n:fill
-
-# Complete workflow (extract + fill + export)
-npm run i18n:complete
-
-# E2E tests with Playwright
-npm run test:e2e              # Run all tests headless
+# E2E tests (Playwright)
+npm run test:e2e              # Run all E2E tests headless
 npm run test:e2e:ui           # Run tests in UI mode
 npm run test:e2e:headed       # Run tests in headed mode
+npm run test:e2e:xml          # Run XML workflow E2E tests
 npm run test:e2e:report       # View test report
+
+# Integration tests
+npm run test:workflow         # Full automated workflow (Unix/macOS/Git Bash)
+npm run test:workflow:win     # Full automated workflow (Windows CMD/PowerShell)
+npm run test:quick            # Quick test (build + extract + validate)
+npm run test:xml              # Test complete XML workflow
+npm run test:all              # Run unit + E2E tests
+
+# Utilities
+npm run i18n:fill             # Fill missing translations (auto-generates demo translations)
+npm run i18n:complete         # Complete workflow (extract + fill + export)
+npm run switch:xml            # Switch demo app to XML format
+npm run switch:json           # Switch demo app to JSON format
 ```
 
 ### Mode Switching
@@ -308,50 +311,70 @@ When generating XLIFF:
 
 ## Testing Strategy
 
-### Unit Tests Required
+The project has comprehensive test coverage across multiple layers:
 
-- **Parsers**: XLIFF 1.2/2.0 parsing, JSON/XML translation files, interpolation extraction
-- **Converters**: XLIFF ↔ JSON, preserve placeholders/plurals/ICU syntax
-- **Validators**: Duplicate keys, missing translations, interpolation consistency
-- **Mergers**: File merging, preserve existing, handle conflicts
-- **Builders**: Extract/export flows, mode switching
+### Unit Tests (Node.js Built-in Test Runner)
 
-### Integration Tests Required
+Located in `tests/` directory, using Node.js built-in test runner (no external dependencies):
 
-- Full extraction flow: templates → translation files → re-extraction preserves data
-- Full export flow: translation files → XLIFF → Angular build succeeds
-- Mode switching: per-component ↔ merged without data loss
+**Files:**
+
+- `tests/fill-translations.test.js` - Tests JSON/XML translation filling
+- `tests/switch-format.test.js` - Tests format switching scripts
+
+**Coverage:**
+
+- ✅ JSON parsing and generation
+- ✅ XML parsing and generation
+- ✅ XML entity escaping
+- ✅ Configuration updates
+- ✅ Translation preservation
+- ✅ Mixed format handling
+- ✅ Round-trip conversions
+
+**Running:**
+
+```bash
+npm run test:unit           # Run all unit tests (TAP format)
+npm run test:unit:verbose   # Run with spec reporter
+```
+
+**Statistics:** 12 tests across 8 suites, ~850ms execution time
+
+See `tests/README.md` for detailed documentation.
 
 ### E2E Tests (Playwright)
 
-The project includes comprehensive E2E tests using Playwright to verify the demo app works correctly:
+Located in `e2e/` directory, testing browser interactions:
 
-**Test Coverage:**
+**Files:**
 
-- Navigation between pages in all locales
-- Translation display correctness (en, es, fr, de)
-- Interpolation functionality (e.g., `Hello {{ userName }}`)
-- Pluralization functionality (ICU message format)
-- Accessibility (navigation, headings, form labels)
-- Translation persistence after page reload
+- `e2e/demo-app.spec.ts` - Multi-locale demo app tests
+- `e2e/xml-workflow.spec.ts` - XML workflow E2E tests
 
-**Running E2E Tests:**
+**Coverage:**
+
+- ✅ Navigation between pages in all locales
+- ✅ Translation display correctness (en, es, fr, de)
+- ✅ Interpolation functionality
+- ✅ Accessibility checks
+- ✅ Complete XML workflow (switch → extract → fill → export → validate → build)
+- ✅ XML special character handling
+- ✅ Translation preservation across re-extraction
+- ✅ JSON vs XML output equivalence
+
+**Running:**
 
 ```bash
 # Install Playwright browsers (first time only)
 npx playwright install
 
-# Run all tests
-npm run test:e2e
-
-# Run tests with UI for debugging
-npm run test:e2e:ui
-
-# Run tests in headed mode (see browser)
-npm run test:e2e:headed
-
-# View test report
-npm run test:e2e:report
+# Run tests
+npm run test:e2e            # Run all E2E tests (multi-locale)
+npm run test:e2e:xml        # Run XML workflow E2E tests
+npm run test:e2e:ui         # Run with UI for debugging
+npm run test:e2e:headed     # Run in headed mode (see browser)
+npm run test:e2e:report     # View test report
 ```
 
 **Configuration:**
@@ -361,9 +384,45 @@ npm run test:e2e:report
 - Generates HTML reports in `playwright-report/`
 - See `e2e/README.md` for detailed documentation
 
-### Demo App Tests Required
+### Integration Tests (Script-Based)
 
-- All i18n markers have translations
+**Workflow Tests:**
+
+```bash
+npm run test:workflow       # Full automated test (Unix/macOS/Git Bash)
+npm run test:workflow:win   # Full automated test (Windows)
+npm run test:quick          # Build + extract + validate
+npm run test:xml            # Complete XML workflow
+```
+
+### Angular Library Unit Tests Required
+
+For the Angular library code (builders, converters, etc.):
+
+- **Parsers**: XLIFF 1.2/2.0 parsing, JSON/XML translation files, interpolation extraction
+- **Converters**: XLIFF ↔ JSON, preserve placeholders/plurals/ICU syntax
+- **Validators**: Duplicate keys, missing translations, interpolation consistency
+- **Mergers**: File merging, preserve existing, handle conflicts
+- **Builders**: Extract/export flows, mode switching
+
+### Test Execution Order
+
+1. **Unit tests first** (fastest, ~1s) - `npm run test:unit`
+2. **Integration tests** (medium, ~30s) - `npm run test:xml`
+3. **E2E tests** (slowest, ~2-5min) - `npm run test:e2e`
+
+**Run all:** `npm run test:all`
+
+### CI Test Jobs
+
+All tests run automatically in GitHub Actions CI:
+
+- **unit-tests**: Node.js unit tests for scripts
+- **e2e-tests**: Playwright multi-locale browser tests
+- **test-xml-format**: Complete XML workflow integration test
+- **e2e-xml-tests**: Playwright XML workflow E2E tests
+- **test-library**: Angular library unit tests (Karma/Jasmine)
+- **matrix-build**: Cross-platform builds (Ubuntu, Windows, macOS)
 - All locales build successfully
 - Interpolations and plurals work correctly
 - Add component → extract → translate → build workflow
@@ -440,6 +499,7 @@ The CI workflow runs on every push and pull request to the `main` branch:
 - **Build Demo**: Builds the demo app to verify integration
 - **E2E Workflow**: Tests the complete i18n extraction/export workflow
 - **E2E Tests**: Runs Playwright tests across all locales (en, es, fr, de)
+- **Test XML Format**: Tests complete workflow with XML translation files
 - **Matrix Build**: Tests on Ubuntu/Windows/macOS with Node 22.x
 - **Code Quality**: Checks formatting with Prettier and TypeScript compilation
 

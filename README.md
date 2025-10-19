@@ -113,9 +113,21 @@ Test the library locally with automated validation:
 npm run test:workflow       # Full automated test (Unix/Git Bash)
 npm run test:workflow:win   # Full automated test (Windows)
 npm run test:quick          # Quick test (build + extract + validate)
+npm run test:xml            # Test XML format workflow
 ```
 
 The automated workflow tests all builders, validates outputs, and builds the demo app. See [TESTING.md](./TESTING.md) for detailed testing instructions.
+
+### Unit Testing
+
+Run unit tests for file generation scripts:
+
+```bash
+npm run test:unit           # Run all unit tests
+npm run test:unit:verbose   # Run with verbose output
+```
+
+See [tests/README.md](./tests/README.md) for detailed unit testing documentation.
 
 ### E2E Testing
 
@@ -129,10 +141,19 @@ npx playwright install
 npm run test:e2e            # Run all tests headless
 npm run test:e2e:ui         # Run tests in UI mode
 npm run test:e2e:headed     # Run tests in headed mode
+npm run test:e2e:xml        # Run XML workflow E2E tests
 npm run test:e2e:report     # View test report
 ```
 
 See [e2e/README.md](./e2e/README.md) for detailed E2E testing documentation.
+
+### All Tests
+
+Run both unit and E2E tests:
+
+```bash
+npm run test:all            # Run unit tests + E2E tests
+```
 
 ## Features
 
@@ -157,9 +178,14 @@ Runs on every push and pull request:
 - **Lint**: Code quality checks
 - **Build Library**: Compiles the library
 - **Test Library**: Unit tests with ChromeHeadless
+- **Unit Tests**: Node.js unit tests for file generation scripts
 - **Build Demo**: Builds the demo application
 - **E2E Workflow**: Tests the complete i18n extraction/export workflow
-- **Matrix Build**: Tests on Ubuntu, Windows, and macOS with Node 18.x and 20.x
+- **E2E Tests**: Playwright tests for multi-locale demo app
+- **Test XML Format**: Complete XML workflow test (switch → extract → fill → export → validate)
+- **E2E XML Tests**: Playwright tests specifically for XML workflow
+- **Matrix Build**: Tests on Ubuntu, Windows, and macOS with Node 22.x
+- **Code Quality**: TypeScript compilation and formatting checks
 
 ### Release Workflow (`.github/workflows/release.yml`)
 
