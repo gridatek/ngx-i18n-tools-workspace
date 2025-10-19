@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Validate i18n Builder",
+  "description": "Validate translations for completeness and correctness",
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "Source translation file for merged mode"
+    },
+    "translationPattern": {
+      "type": "string",
+      "description": "Glob pattern for translation files in per-component mode"
+    },
+    "sourceLocale": {
+      "type": "string",
+      "default": "en",
+      "description": "Source language code"
+    },
+    "targetLocales": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Target language codes"
+    }
+  },
+  "required": ["sourceLocale", "targetLocales"]
+}

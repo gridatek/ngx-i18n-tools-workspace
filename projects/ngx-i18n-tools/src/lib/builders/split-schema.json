@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Split i18n Builder",
+  "description": "Split merged translation file into per-component files",
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string",
+      "default": "src/locale/translations.json",
+      "description": "Source merged translation file"
+    },
+    "templatePattern": {
+      "type": "string",
+      "default": "src/**/*.component.html",
+      "description": "Glob pattern to find template files"
+    },
+    "translationFileNaming": {
+      "type": "string",
+      "default": "{component}.i18n.json",
+      "description": "Naming pattern for translation files"
+    },
+    "outputFormat": {
+      "type": "string",
+      "enum": ["json", "xml"],
+      "default": "json",
+      "description": "Output format for translation files"
+    }
+  },
+  "required": ["source", "templatePattern"]
+}

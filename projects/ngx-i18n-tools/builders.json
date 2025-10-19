@@ -1,0 +1,30 @@
+{
+  "$schema": "@angular-devkit/architect/src/builders-schema.json",
+  "builders": {
+    "extract": {
+      "implementation": "./src/lib/builders/extract-builder",
+      "schema": "./src/lib/builders/extract-schema.json",
+      "description": "Extract i18n messages from templates and convert to all-in-one format"
+    },
+    "export": {
+      "implementation": "./src/lib/builders/export-builder",
+      "schema": "./src/lib/builders/export-schema.json",
+      "description": "Export all-in-one translations to XLIFF files for Angular"
+    },
+    "validate": {
+      "implementation": "./src/lib/builders/validate-builder",
+      "schema": "./src/lib/builders/validate-schema.json",
+      "description": "Validate translations for completeness and correctness"
+    },
+    "merge": {
+      "implementation": "./src/lib/builders/merge-builder",
+      "schema": "./src/lib/builders/merge-schema.json",
+      "description": "Merge per-component translation files into a single file"
+    },
+    "split": {
+      "implementation": "./src/lib/builders/split-builder",
+      "schema": "./src/lib/builders/split-schema.json",
+      "description": "Split merged translation file into per-component files"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+.profile-container {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-info {
+  margin: 1rem 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.profile-info label {
+  font-weight: bold;
+  min-width: 100px;
+}
+
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
