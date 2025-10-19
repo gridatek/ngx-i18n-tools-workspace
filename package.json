@@ -1,6 +1,6 @@
 {
   "name": "ngx-i18n-tools-workspace",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Angular i18n tooling library workspace",
   "scripts": {
     "build:builders": "tsc -p projects/ngx-i18n-tools/src/lib/builders/tsconfig.json",
