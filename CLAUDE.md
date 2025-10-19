@@ -76,6 +76,34 @@ The `npm run build:lib` script runs all three steps automatically. The output is
 
 **Important**: When developing builders, you must rebuild the library (`npm run build:lib`) for changes to take effect in the demo app, as Angular CLI loads builders from the installed package.
 
+## Translation Files in Demo App
+
+**Important Note:** Translation files (`*.i18n.json`) in the demo app are **generated files** and are **not committed to git**.
+
+**Workflow:**
+
+1. Run `npm run i18n:extract` to generate empty translation files from templates
+2. Either:
+   - **Automated (for demo/testing):** Run `npm run i18n:fill` to auto-populate with demo translations
+   - **Manual (for real projects):** Edit the `.i18n.json` files manually
+3. Run `npm run i18n:export` to generate XLIFF files
+4. Run `npm run i18n:validate` to check coverage
+
+**Why not commit them?**
+
+- They are auto-generated from templates
+- The `i18n:fill` script provides demo data
+- In real projects, translators maintain these files
+- Keeps the repository clean and focused on source code
+
+**Gitignore entries:**
+
+```
+projects/demo-app/**/*.i18n.json
+projects/demo-app/**/*.i18n.xml
+**/locale/messages.*.xlf
+```
+
 ### Local Testing Setup
 
 To test the library locally with the demo app:

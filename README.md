@@ -41,11 +41,26 @@ npm run serve:demo
 
 ### Test i18n Workflow
 
+**Option 1: Automated (recommended for demo/testing)**
+
+```bash
+# Complete workflow: extract + fill + export
+npm run i18n:complete
+
+# Validate translations
+npm run i18n:validate
+
+# Build the demo app with all locales
+npm run build:demo
+```
+
+**Option 2: Manual (for real projects)**
+
 ```bash
 # 1. Extract translations from templates
 npm run i18n:extract
 
-# 2. Edit the generated .i18n.json files to add translations
+# 2. Edit the generated .i18n.json files to add translations manually
 
 # 3. Export to XLIFF files
 npm run i18n:export
@@ -56,6 +71,8 @@ npm run i18n:validate
 # 5. Build the demo app with all locales
 npm run build:demo
 ```
+
+> **Note:** Translation files (`.i18n.json`) are now generated and not committed to git. Use `npm run i18n:fill` to auto-generate demo translations, or manually edit them after extraction.
 
 ## Development Commands
 
