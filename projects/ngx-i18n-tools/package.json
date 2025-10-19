@@ -1,6 +1,6 @@
 {
   "name": "@gridatek/ngx-i18n-tools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Angular i18n tooling library with all-in-one translation format",
   "keywords": [
     "angular",
