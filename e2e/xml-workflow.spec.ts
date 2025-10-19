@@ -35,6 +35,23 @@ test.describe('XML Translation Workflow E2E', () => {
   });
 
   test('should successfully complete XML workflow', async () => {
+    // Step 0: Clean up any existing translation files (JSON or XML)
+    const translationPatterns = [
+      'projects/demo-app/src/**/*.i18n.json',
+      'projects/demo-app/src/**/*.i18n.xml',
+    ];
+
+    const glob = require('glob');
+    for (const pattern of translationPatterns) {
+      const files = glob.sync(pattern, { cwd: PROJECT_ROOT });
+      for (const file of files) {
+        const fullPath = path.join(PROJECT_ROOT, file);
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        }
+      }
+    }
+
     // Step 1: Switch to XML
     const switchOutput = execSync('node scripts/switch-to-xml.js', {
       cwd: PROJECT_ROOT,
