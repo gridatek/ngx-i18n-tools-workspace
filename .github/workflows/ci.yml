@@ -307,6 +307,11 @@ jobs:
           cd ../..
           npm link @gridatek/ngx-i18n-tools
 
+      - name: Clean up existing translation files
+        run: |
+          rm -f projects/demo-app/src/**/*.i18n.json
+          rm -f projects/demo-app/src/**/*.i18n.xml
+
       - name: Switch to XML format
         run: npm run switch:xml
 
