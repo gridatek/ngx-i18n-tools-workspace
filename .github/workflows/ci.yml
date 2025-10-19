@@ -279,14 +279,30 @@ jobs:
       - name: Build library
         run: npm run build:lib
 
-      - name: Ensure JSON format (test will switch to XML internally)
-        run: npm run switch:json
+      - name: Switch to XML format
+        run: npm run switch:xml
+
+      - name: Extract translations (XML format)
+        run: npm run i18n:extract
+
+      - name: Fill translations
+        run: npm run i18n:fill
+
+      - name: Export to XLIFF
+        run: npm run i18n:export
+
+      - name: Validate translations
+        run: npm run i18n:validate
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
       - name: Run XML workflow E2E tests
         run: npm run test:e2e:xml
+
+      - name: Switch back to JSON format
+        run: npm run switch:json
+        if: always()
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
