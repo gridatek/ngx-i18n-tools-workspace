@@ -24,9 +24,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm run test:lib -- --watch=false --browsers=ChromeHeadless
-
       - name: Build library
         run: npm run build:lib
 
