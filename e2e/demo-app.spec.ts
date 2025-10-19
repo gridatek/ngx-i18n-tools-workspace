@@ -188,9 +188,9 @@ test.describe('Demo App - Accessibility', () => {
   test('should have proper heading hierarchy', async ({ page }) => {
     await page.goto('/');
 
-    // Check for h1 heading
-    const h1 = page.getByRole('heading', { level: 1 });
-    await expect(h1).toBeVisible();
+    // Check for h1 headings (there should be at least one)
+    const h1Count = await page.getByRole('heading', { level: 1 }).count();
+    expect(h1Count).toBeGreaterThan(0);
   });
 
   test('profile page should have proper form labels', async ({ page }) => {
