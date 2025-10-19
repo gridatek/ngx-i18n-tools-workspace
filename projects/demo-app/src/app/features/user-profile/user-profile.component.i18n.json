@@ -1,12 +1,6 @@
 {
-  "profile.title": {
-    "en": "User Profile",
-    "es": "",
-    "fr": "",
-    "de": ""
-  },
-  "profile.name.label": {
-    "en": "Name:",
+  "profile.edit": {
+    "en": "Edit Profile",
     "es": "",
     "fr": "",
     "de": ""
@@ -17,8 +11,14 @@
     "fr": "",
     "de": ""
   },
-  "profile.edit": {
-    "en": "Edit Profile",
+  "profile.name.label": {
+    "en": "Name:",
+    "es": "",
+    "fr": "",
+    "de": ""
+  },
+  "profile.search.title": {
+    "en": "Search your profile",
     "es": "",
     "fr": "",
     "de": ""
@@ -29,8 +29,8 @@
     "fr": "",
     "de": ""
   },
-  "profile.search.title": {
-    "en": "Search your profile",
+  "profile.title": {
+    "en": "User Profile",
     "es": "",
     "fr": "",
     "de": ""

@@ -1,4 +1,10 @@
 {
+  "app.footer": {
+    "en": "© 2024 Gridatek. All rights reserved.",
+    "es": "",
+    "fr": "",
+    "de": ""
+  },
   "app.title": {
     "en": "ngx-i18n-tools Demo",
     "es": "",
@@ -13,12 +19,6 @@
   },
   "nav.profile": {
     "en": "Profile",
-    "es": "",
-    "fr": "",
-    "de": ""
-  },
-  "app.footer": {
-    "en": "© 2024 Gridatek. All rights reserved.",
     "es": "",
     "fr": "",
     "de": ""
