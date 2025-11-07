@@ -12,11 +12,11 @@ This workspace contains the `@gridatek/ngx-i18n-tools` Angular library and a dem
 ngx-i18n-tools-workspace/
 ├── projects/
 │   ├── ngx-i18n-tools/       # Main library
-│   ├── schematics/            # ng add support
-│   └── demo-app/              # Demo application
-├── CLAUDE.md                  # Instructions for Claude Code
+│   ├── schematics/           # ng add support
+│   └── demo-app/             # Demo application
+├── CLAUDE.md                 # Instructions for Claude Code
 ├── ngx-i18n-tools-doc.md     # Complete documentation
-└── README.md                  # This file
+└── README.md                 # This file
 ```
 
 ## Quick Start
